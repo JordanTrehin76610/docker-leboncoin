@@ -1,0 +1,15 @@
+{
+    "name": "jury-1/docker-leboncoin-main",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "JordanTrehin76610",
+            "email": "jordantrehinpro@gmail.com"
+        }
+    ],
+    "require": {}
+}
