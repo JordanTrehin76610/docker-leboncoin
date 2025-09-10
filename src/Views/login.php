@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 $host = 'db';         // Nom du service MySQL dans Docker
 $port = 3306;         // Port MySQL
 $db   = 'leboncoin';  // Nom de la base
@@ -12,62 +14,52 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Gère les erreu
 
 
 $erreur = [];
-
-
-try {
-    // Requête SELECT
-    $stmt = $pdo->query("SELECT u_email, u_password FROM users");
-
-    // Parcourir les résultats
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        echo "email: {$row['u_email']} - mdp: {$row['u_password']}<br>";
-    }
-
-} catch (PDOException $e) {
-    die("❌ Erreur : " . $e->getMessage());
-}
+$email = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    if(isset($_POST["email"])) {
-        if (empty($_POST["email"])) {
-            $erreur["email"] = "Veuillez inscrire votre email";
-        } else if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
-            $erreur["email"] = "Mail non valide";
-        } else {
-            foreach ($users as $utilisateur) {
-                if ($utilisateur['mail'] == $_POST['email']) {
-                    $_SESSION['role'] = $utilisateur['role']; //Pour le $_SESSION
-                    $_SESSION['name'] = $utilisateur['name'];
-                    break;
-                } else {
-                    $erreur["email"] = "Adresse mail incorrecte";
-                }
+    // Vérification email
+    $email = $_POST["email"] ?? '';
+    $mdp = $_POST["mdp"] ?? '';
+
+    if (empty($email)) {
+        $erreur["email"] = "Veuillez inscrire votre email";
+    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $erreur["email"] = "Mail non valide";
+    }
+
+    // Vérification mot de passe
+    if (empty($mdp)) {
+        $erreur["mdp"] = "Veuillez inscrire votre mot de passe";
+    }
+
+    // Si pas d'erreur sur email/mdp, on va chercher l'utilisateur
+    if (empty($erreur)) {
+        try {
+            $stmt = $pdo->prepare("SELECT u_id, u_username, u_email, u_password, u_inscription FROM users WHERE u_email = :email");
+            $stmt->execute(['email' => $email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($mdp, $user['u_password'])) {
+                //stocke dans session
+                $_SESSION['id'] = $user['u_id'];
+                $_SESSION['username'] = $user['u_username'];
+                $_SESSION['email'] = $user['u_email'];
+                $_SESSION['date'] = $user['u_inscription'];
+
+                // Redirection
+                header("Location: index.php?url=profil");
+                exit;
+
+            } else {
+                $erreur['connexion'] = "Adresse mail ou mot de passe incorrect";
             }
+
+        } catch (PDOException $e) {
+            die("❌ Erreur : " . $e->getMessage());
         }
     }
-
-    if(isset($_POST["mdp"]) && empty($erreur["email"])) {
-        foreach ($users as $index => $mdp) {
-            if ($mdp['mail'] == $_POST['email']) {
-                $indexUtilisateur = $index;
-            }
-        }
-        if (empty($_POST["mdp"])) {
-            $erreur["mdp"] = "Veuillez inscrire votre mot de passe";
-        } else if (password_verify($_POST['mdp'], $users[$indexUtilisateur]['password'])) { //Verifie le mdp avec le mot de passe dans users.php
-            $_SESSION['connexion'] = true; //Instruction pour éviter de se faire éjecter de l'espace
-        } else {
-            $erreur["mdp"] = "Mot de passe incorrect";
-        }
-    }
-
-    if(empty($erreur)) { //Si pas d'erreur alors on redirige quand tout est bon
-        header("Location: espace.php");
-    }
-
 }
-
 ?>
 
 
@@ -86,27 +78,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-    <navbar>
+        <navbar>
         <div class="container text-center">
             <div class="row pt-2 my-auto">
                 <div class="col-8 text-start mt-2">
                     <a href="index.php?url=home"><img src="uploads/logo.jpg" alt="Logo Leboncon"></a>
                 </div>
+                <?php if(isset($_SESSION['username'])) { ?>
                 <div class="col-2">
                     <div class="row">
-                        <a href="index.php?url=register" class="btn bouton"><button class="boutton"
-                                type="button">S'inscrire</button></a>
+                        <a href="index.php?url=logout" class="btn bouton"><button class="boutton"
+                                type="button">Déconnexion</button></a>
                     </div>
                 </div>
                 <div class="col-2">
+                    <a href="index.php?url=profil" class="text-dark text-decoration-none">
+                        <div class="row">
+                            <i class="bi bi-person icone"></i>
+                        </div>
+                        <div class="row">
+                            <p class="text-dark text-decoration-none">Bonjour <?= $_SESSION['username'] ?> </p>
+                        </div>
+                    </a>
+                </div>
+                <?php } else { ?>
+                <div class="col-2">
                     <div class="row">
-                        <i class="bi bi-person icone"></i>
+                        <a href="index.php?url=register" class="btn bouton"><button class="boutton"
+                                type="button">Inscription</button></a>
                     </div>
-                    <div class="row">
-                        <a href="index.php?url=login" class="text-dark text-decoration-none">
+                </div>
+                <div class="col-2">
+                    <a href="index.php?url=login" class="text-dark text-decoration-none">
+                        <div class="row">
+                            <i class="bi bi-person icone"></i>
+                        </div>
+                        <div class="row">
                             <p class="text-dark text-decoration-none">Se connecter</p>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -118,7 +129,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h1>Connexion</h1>
         <form method="post" action="" novalidate>
             <span style="color: red !important; display: inline; float: none;">*</span>
-            <span>Champ obligatoire à remplir</span>
+            <span>Champ obligatoire à remplir</span><span
+                class="ms-2 text-danger fst-italic fw-light"><?= $erreur["connexion"] ?? '' ?></span>
             <div class="row mt-3">
                 <div class="col">
                     <div class="mb-3 text-start">

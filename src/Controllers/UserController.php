@@ -19,7 +19,10 @@ class UserController
     }
 
     public function logout(): void {
-        
+        session_start();
+        session_destroy();
+        session_unset();
+        header("Location: index.php?url=home");
     }
 }
 

@@ -12,3 +12,13 @@
 .icone {
     font-size: 1.35rem;
 }
+
+.photo {
+    height: auto;
+    width: 100%;
+    max-height: 20rem;
+}
+
+.cadre {
+    height: 20rem;
+}

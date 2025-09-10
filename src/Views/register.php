@@ -1,5 +1,9 @@
 <?php
 
+session_start();
+session_unset();
+session_destroy();
+
 $host = 'db';         // Nom du service MySQL dans Docker
 $port = 3306;         // Port MySQL
 $db   = 'leboncoin';  // Nom de la base
@@ -10,7 +14,7 @@ $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4"; //Génère le c
 $pdo = new PDO($dsn, $user, $pass); //Fais la connection   
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Gère les erreurs
 
-$nom = "/^[a-z.-]+$/i"; //Regex
+$nom = "/^[a-z0-9.-]+$/i"; //Regex
 $erreur = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -57,6 +61,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if(empty($erreur)){
+
+        // Vérifier si l'email existe
+        $stmt = $pdo->prepare("SELECT u_id FROM users WHERE u_email = :email");
+        $stmt->execute(['email' =>  $_POST['email']]);
+        if ($stmt->fetch()) {
+            $erreur["email"] = "Adresse email déjà utilisée";
+        }
+
+        // Vérifier si le pseudo existe
+        $stmt = $pdo->prepare("SELECT u_id FROM users WHERE u_username = :pseudo");
+        $stmt->execute(['pseudo' => $_POST['pseudo']]);
+        if ($stmt->fetch()) {
+            $erreur["pseudo"] = "Pseudo déjà utilisé";
+        }
+
+        
         $mdp = password_hash($_POST['mdpVerif'], PASSWORD_DEFAULT);
         try {
         //Requete
@@ -69,7 +89,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ]);
         header("Location: index.php?url=login");
         } catch (PDOException $e) {
-            $erreur["email"] = "Mail déjà utilisé";
         }
     }
 
@@ -94,30 +113,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-    <navbar>
+ <navbar>
         <div class="container text-center">
             <div class="row pt-2 my-auto">
                 <div class="col-8 text-start mt-2">
                     <a href="index.php?url=home"><img src="uploads/logo.jpg" alt="Logo Leboncon"></a>
                 </div>
+                <?php if(isset($_SESSION['username'])) { ?>
+                <div class="col-2">
+                    <div class="row">
+                        <a href="index.php?url=logout" class="btn bouton"><button class="boutton"
+                                type="button">Déconnexion</button></a>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <a href="index.php?url=profil" class="text-dark text-decoration-none">
+                        <div class="row">
+                            <i class="bi bi-person icone"></i>
+                        </div>
+                        <div class="row">
+                            <p class="text-dark text-decoration-none">Bonjour <?= $_SESSION['username'] ?> </p>
+                        </div>
+                    </a>
+                </div>
+                <?php } else { ?>
                 <div class="col-2">
                     <div class="row">
                         <a href="index.php?url=register" class="btn bouton"><button class="boutton"
-                                type="button">S'inscrire</button></a>
+                                type="button">Inscription</button></a>
                     </div>
                 </div>
                 <div class="col-2">
-                    <div class="row">
-                        <i class="bi bi-person icone"></i>
-                    </div>
-                    <div class="row">
-                        <a href="index.php?url=login" class="text-dark text-decoration-none">
+                    <a href="index.php?url=login" class="text-dark text-decoration-none">
+                        <div class="row">
+                            <i class="bi bi-person icone"></i>
+                        </div>
+                        <div class="row">
                             <p class="text-dark text-decoration-none">Se connecter</p>
-                        </a>
-                    </div>
+                        </div>
+                    </a>
+                    <?php } ?>
                 </div>
             </div>
-        </div>
     </navbar>
 
     <hr>
