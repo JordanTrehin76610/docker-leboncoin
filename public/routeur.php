@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\HomeController;
+use App\Controllers\UserController;
 
 if (empty($_GET['url'])) {
     $url = ['home'];
@@ -14,10 +15,12 @@ switch ($url[0]) {
         $controller->index();
         break;
     case 'register':
-        
+        $controller = new UserController();
+        $controller->register();
         break;
     case 'login':
-        
+        $controller = new UserController();
+        $controller->login();
         break;
     case "profil":
         

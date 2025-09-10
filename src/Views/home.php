@@ -12,14 +12,16 @@
 
 
 <body>
+
+<navbar>
     <div class="container text-center">
-        <div class="row pt-2">
+        <div class="row pt-2 my-auto">
             <div class="col-8 text-start mt-2">
-                <img src="uploads/logo.jpg" alt="Logo Leboncon">
+                <a href="index.php?url=home"><img src="uploads/logo.jpg" alt="Logo Leboncon"></a>
             </div>
             <div class="col-2">
                 <div class="row">
-                    <button class="boutton" type="button">S'inscrire</button>
+                    <a href="index.php?url=register" class="btn bouton"><button class="boutton" type="button">S'inscrire</button></a>
                 </div>
             </div>
             <div class="col-2">
@@ -27,11 +29,13 @@
                     <i class="bi bi-person icone"></i>
                 </div>
                 <div class="row">
-                    <p>Se connecter</p>
+                    <a href="index.php?url=login" class="text-dark text-decoration-none"><p class="text-dark text-decoration-none">Se connecter</p></a>
                 </div>
             </div>
         </div>
     </div>
+</navbar>
+
 
     <hr>
     

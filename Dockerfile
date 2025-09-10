@@ -35,3 +35,14 @@ COPY ./php/conf/php.ini /usr/local/etc/php/php.ini
 
 # Configuration de Xdebug (copie du fichier une seule fois)
 COPY ./php/conf/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
+# Installer les dépendances pour MySQLi
+RUN apt-get update && apt-get install -y \
+    default-mysql-client \
+    libonig-dev \
+    libzip-dev \
+    unzip \
+    && docker-php-ext-install mysqli pdo pdo_mysql
+
+# Activer le module mysqli
+RUN docker-php-ext-enable mysqli
