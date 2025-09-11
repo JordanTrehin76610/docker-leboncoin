@@ -1,27 +1,3 @@
-<?php
-
-session_start();
-
-if (empty($_GET['url'])) {
-    $url = ['home'];
-} else {
-    $url = explode("/", $_GET['url']);
-}
-
-use App\Models\Database;
-$pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
-
-try {
-    $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, a_id, u_username, annonces.u_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE a_id = :id");
-    $stmt->execute(['id' => $url[1]]);
-    $annonce = $stmt->fetch(PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-    die("❌ Erreur SQL : " . $e->getMessage());
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -89,20 +65,20 @@ try {
         <div class="container text-center">
             <div class="row">
                 <div class="col border-end">
-                    <img src="<?= $annonce['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                    <img src="<?= $_SESSION['annonce']['a_picture'] ?>" alt="Photo de l'article" class="photo border">
                 </div>
                 <div class="col text-start ps-5">
                     <div class="row">
-                        <h2><?= htmlspecialchars($annonce['a_title']) ?></h2>
+                        <h2><?= htmlspecialchars($_SESSION['annonce']['a_title']) ?></h2>
                     </div>
                     <div class="row">
-                        <h4>Par <?= htmlspecialchars($annonce['u_username']) ?></h4>
+                        <h4>Par <?= htmlspecialchars($_SESSION['annonce']['u_username']) ?></h4>
                     </div>
                     <div class="row">
-                        <p><?= $annonce['a_description'] ?></p>
+                        <p><?= $_SESSION['annonce']['a_description'] ?></p>
                     </div>
                     <div class="row mt-5">
-                        <p class="badge text-bg-success w-25"><?= $annonce['a_price'] ?>€</p>
+                        <p class="badge text-bg-success w-25"><?= $_SESSION['annonce']['a_price'] ?>€</p>
                     </div>
                 </div>
             </div>

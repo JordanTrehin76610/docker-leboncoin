@@ -1,23 +1,6 @@
-<?php
-
-session_start();
-
-use App\Models\Database;
-$pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
-
-try {
-    $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, a_id, u_username FROM annonces INNER JOIN users ON annonces.u_id = users.u_id");
-    $stmt->execute();
-    $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-    die("❌ Erreur SQL : " . $e->getMessage());
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -80,12 +63,12 @@ try {
     <hr>
 
     <div class="mx-auto w-75">
-    <h1 class="my-5">Les annonces</h1>
+        <h1 class="my-5">Les annonces</h1>
 
- <?php if (!empty($annonce)) { ?>
+        <?php if (!empty($_SESSION['annonce'])) { ?>
         <div class="container text-center mb-5">
             <div class="row">
-                <?php foreach ($annonce as $article) { ?>
+                <?php foreach ($_SESSION['annonce'] as $article) { ?>
                 <?php $url = "index.php?url=details/". $article['a_id']?>
                 <a href='<?= $url ?>' class="text-decoration-none text-dark col-4 border">
                     <div class="row">
@@ -115,12 +98,14 @@ try {
                 <?php } ?>
             </div>
         </div>
-    <?php } else { ?>
-    <p class="fs-3">Aucune annonce</p>
-    <?php } ?>
+        <?php } else { ?>
+        <p class="fs-3">Aucune annonce</p>
+        <?php } ?>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+    </script>
 </body>
 
 

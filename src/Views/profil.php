@@ -1,21 +1,3 @@
-<?php 
-
-session_start();
-
-use App\Models\Database;
-$pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
-
-try {
-    $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, u_id, a_id FROM annonces WHERE u_id = :id");
-    $stmt->execute(['id' => $_SESSION['id']]);
-    $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-    die("❌ Erreur SQL : " . $e->getMessage());
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -120,10 +102,10 @@ try {
 
         <h2 class="mb-5">Vos annonces</h2>
 
-        <?php if (!empty($annonce)) { ?>
+        <?php if (!empty($_SESSION['annonces'])) { ?>
         <div class="container text-center mb-5">
             <div class="row">
-                <?php foreach ($annonce as $article) { ?>
+                <?php foreach ($_SESSION['annonces'] as $article) { ?>
                 <?php $url = "index.php?url=details/". $article['a_id']?>
                 <a href='<?= $url ?>' class="text-decoration-none text-dark col-4 border">
                     <div class="row">

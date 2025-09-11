@@ -33,6 +33,7 @@ class UserController
     
 
     public function login(): void {
+        session_start();
         // Vérification email
         $email = $_POST["email"] ?? '';
         $mdp = $_POST["mdp"] ?? '';
@@ -86,14 +87,36 @@ class UserController
     }
 
     public function profil($id): void {
+
+        session_start();
+
+        // Récupère les infos utilisateur
         try {
             $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
-            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, u_id, a_id FROM annonces WHERE u_id = :id");
+            $stmt = $pdo->prepare("SELECT u_id, u_username, u_inscription, u_email FROM users WHERE u_id = :id");
             $stmt->execute(['id' => $id]);
-            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $_SESSION['id'] = $user['u_id'];
+            $_SESSION['username'] = $user['u_username'];
+            $_SESSION['date'] = $user['u_inscription'];
+            $_SESSION['email'] = $user['u_email'];
 
         } catch (PDOException $e) {
-            die("❌ Erreur SQL : " . $e->getMessage());
+            // die("❌ Erreur SQL : " . $e->getMessage());
+        }
+
+
+
+        // Récupère les annonces de l'utilisateur
+        try {
+            $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+            $stmt = $pdo->prepare("SELECT a_title, a_picture, a_description, a_price, annonces.u_id, a_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE annonces.u_id = :id");
+            $stmt->execute(['id' => $id]);
+            $annonces = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $_SESSION['annonces'] = $annonces;
+        } catch (PDOException $e) {
+            // die("❌ Erreur SQL : " . $e->getMessage());
         }
         require_once __DIR__ . '/../views/profil.php';   // On envoie ça à une vue
     }

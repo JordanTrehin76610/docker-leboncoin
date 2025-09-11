@@ -1,7 +1,5 @@
 <?php
 
-session_start();
-
 use App\Models\Database;
 $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
@@ -28,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
-        <navbar>
+    <navbar>
         <div class="container text-center">
             <div class="row pt-2 my-auto">
                 <div class="col-8 text-start mt-2">

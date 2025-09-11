@@ -1,24 +1,126 @@
 <?php 
 namespace App\Models;
 
+use App\Models\Database;
+use PDO;
+
 class Annonce
 {
 
-    public function createAnnonce(string $titre, string $description, float $prix, ?string $photo, int $userId): bool {
-        
+    public function createAnnonce(string $titre, string $description, float $prix, ?array $photo, int $userId): bool {
+
+        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex
+        $erreur = [];
+        // var_dump($_FILES);
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+            if(isset($photo)) {
+                if ($photo['name'] == '' ) {
+                    $erreur['photo'] = "Veuillez choisir une photo pour votre article";
+                } else if ($photo['type'] !== 'image/jpeg' && $photo['type'] !== 'image/jpg' && $photo['type'] !== 'image/png' && $photo['type'] !== 'image/webp') {
+                    $erreur['photo'] = "Mauvais type de fichier";
+                } else if ($photo['size'] > 9000000) {
+                    $erreur['photo'] = "Fichier trop lourd, image de moins 8Mo uniquement";
+                }
+            }
+
+            if(isset($titre)) {
+                if (empty($titre)) {
+                    $erreur["titre"] = "Veuillez inscrire un titre à votre article";
+                } else if (strlen($titre) > 255) { //strlen regarde la longueur d'une chaîne
+                    $erreur["titre"] = "Titre trop long";
+                }
+            }
+
+            if(isset($prix)) {
+                if (empty($prix)) {
+                    $erreur["prix"] = "Veuillez inscrire un prix à votre article";
+                } else if (!preg_match($regexPrix, $prix)) {
+                    $erreur["prix"] = "Uniquement deux chiffres après la virgule";
+                } else if ($prix < 0) {
+                    $erreur["prix"] = "Veuillez inscrire un prix supérieur à 0 €";
+                } else if ($prix > 999999999) {
+                    $erreur["prix"] = "Prix trop grand";
+                }
+            }
+
+            if(isset($description)) {
+                if (empty($description)) {
+                    $erreur["description"] = "Veuillez décrire votre articles";
+                }
+            }
+
+            if(empty($erreur)){
+                $tmpName = $photo['tmp_name'];
+                $name = $photo['name'];
+                $chemin = 'uploads/'.$userId.'_'.$name;
+                move_uploaded_file($tmpName, __DIR__ . '/../../public/uploads/'.$userId.'_'.$name); //Enregistre le fichier photo
+                try {
+                //Requete
+                $stmt = $pdo->prepare("INSERT INTO annonces (a_title, a_description, a_price, a_picture, u_id) VALUES (:titre, :descriptions, :prix, :photo, :utilisateur)"); 
+                // Exécution avec les valeurs
+                $stmt->execute([
+                    ':titre' => $titre,
+                    ':descriptions' => $description,
+                    ':prix' => $prix,
+                    ':photo' => $chemin,
+                    ':utilisateur' => $userId
+                ]);
+                header("Location: index.php?url=profil");
+                exit;
+                return true;    
+                } catch (PDOException $e) {
+                    return false;
+                }
+            }
+        }
+        return false;
     }
+
+
 
     public function findAll(): array {
+
+        session_start();
+
+        $pdo = Database::getConnection();
         
+        try {
+            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, a_id, u_username FROM annonces INNER JOIN users ON annonces.u_id = users.u_id");
+            $stmt->execute();
+            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $_SESSION['annonce'] = $annonce;
+
+        } catch (PDOException $e) {
+            die("❌ Erreur SQL : " . $e->getMessage());
+        }
+        return $_SESSION['annonce'];
     }
+
+
 
     public function findById(int $id): ?array {
-        
+        session_start();
+
+        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+
+        try {
+            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, a_id, u_username, annonces.u_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE a_id = :id");
+            $stmt->execute(['id' => $id]);
+            $annonce = $stmt->fetch(PDO::FETCH_ASSOC);
+            $_SESSION['annonce'] = $annonce;
+
+        } catch (PDOException $e) {
+            die("❌ Erreur SQL : " . $e->getMessage());
+        }
+        return $_SESSION['annonce'];
     }
 
-    public function findByUser(int $userId): array {
+    // public function findByUser(int $userId): array {
         
-    }
+    // }
    
 }
 

@@ -3,7 +3,6 @@
 use App\Controllers\HomeController;
 use App\Controllers\UserController;
 use App\Controllers\AnnonceController;
-use App\Models\Database;
 
 if (empty($_GET['url'])) {
     $url = ['home'];
