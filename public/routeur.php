@@ -30,7 +30,7 @@ switch ($url[0]) {
             $controller->page404();
         } else {
             $controller = new UserController();
-            $controller->profil();
+            $controller->profil($url[1]);
         }
         break;
     case "logout":

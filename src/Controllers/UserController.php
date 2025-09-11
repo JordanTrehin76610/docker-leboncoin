@@ -68,7 +68,7 @@ class UserController
                         $_SESSION['email'] = $user['u_email'];
 
                         // Redirection
-                        header("Location: index.php?url=profil");
+                        header("Location: index.php?url=profil/" . $user['u_id']);
                         exit;
 
                     } else {
@@ -85,7 +85,16 @@ class UserController
         require_once __DIR__ . '/../views/login.php';   // On envoie ça à une vue
     }
 
-    public function profil(): void {
+    public function profil($id): void {
+        try {
+            $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, u_id, a_id FROM annonces WHERE u_id = :id");
+            $stmt->execute(['id' => $id]);
+            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            die("❌ Erreur SQL : " . $e->getMessage());
+        }
         require_once __DIR__ . '/../views/profil.php';   // On envoie ça à une vue
     }
 
