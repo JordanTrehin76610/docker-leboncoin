@@ -7,6 +7,10 @@ class HomeController
     public function index(): void {
         require_once __DIR__ . '/../Views/home.php';   // On envoie ça à une vue
     }
+
+    public function page404(): void {
+        require_once __DIR__ . '/../Views/page404.php';   // On envoie ça à une vue
+    }
 }
 
 ?>

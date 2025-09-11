@@ -2,18 +2,11 @@
 
 session_start();
 
-$host = 'db';         // Nom du service MySQL dans Docker
-$port = 3306;         // Port MySQL
-$db   = 'leboncoin';  // Nom de la base
-$user = 'root';       // Utilisateur
-$pass = 'root';       // Mot de passe
-
-$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4"; //Génère le chemin de connection
-$pdo = new PDO($dsn, $user, $pass); //Fais la connection   
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Gère les erreurs
+use App\Models\Database;
+$pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
 try {
-    $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, u_id FROM annonces WHERE u_id = :id");
+    $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, u_id, a_id FROM annonces WHERE u_id = :id");
     $stmt->execute(['id' => $_SESSION['id']]);
     $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -37,7 +30,7 @@ try {
 
 
 <body>
-        <navbar>
+    <navbar>
         <div class="container text-center">
             <div class="row pt-2 my-auto">
                 <div class="col-8 text-start mt-2">
@@ -126,19 +119,20 @@ try {
 
 
         <h2 class="mb-5">Vos annonces</h2>
-        
+
         <?php if (!empty($annonce)) { ?>
         <div class="container text-center mb-5">
             <div class="row">
                 <?php foreach ($annonce as $article) { ?>
-                <div class="col-4 border">
+                <?php $url = "index.php?url=details/". $article['a_id']?>
+                <a href='<?= $url ?>' class="text-decoration-none text-dark col-4 border">
                     <div class="row">
-                        <div class="col">
+                        <div class="col text-start">
                             <p><?= htmlspecialchars($article['a_title']) ?></p>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col">
+                        <div class="col cadre">
                             <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
                         </div>
                     </div>
@@ -152,7 +146,7 @@ try {
                             <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
                         </div>
                     </div>
-                </div>
+                </a>
                 <?php } ?>
             </div>
         </div>

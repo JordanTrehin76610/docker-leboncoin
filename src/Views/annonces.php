@@ -2,18 +2,11 @@
 
 session_start();
 
-$host = 'db';         // Nom du service MySQL dans Docker
-$port = 3306;         // Port MySQL
-$db   = 'leboncoin';  // Nom de la base
-$user = 'root';       // Utilisateur
-$pass = 'root';       // Mot de passe
-
-$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4"; //Génère le chemin de connection
-$pdo = new PDO($dsn, $user, $pass); //Fais la connection   
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Gère les erreurs
+use App\Models\Database;
+$pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
 try {
-    $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, u_id, a_id FROM annonces");
+    $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, a_id, u_username FROM annonces INNER JOIN users ON annonces.u_id = users.u_id");
     $stmt->execute();
     $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -89,38 +82,39 @@ try {
     <div class="mx-auto w-75">
     <h1 class="my-5">Les annonces</h1>
 
-    <?php if (!empty($annonce)) { ?>
-    <div class="container text-center mb-5">
-        <div class="row">
-            <?php foreach ($annonce as $article) { ?>
-            <?php $url = "index.php?url=details/". $article['a_id']?>
-            <a href='<?= $url ?>'>
-            <div class="col-4 border">
-                <div class="row">
-                    <div class="col">
-                        <p><?= htmlspecialchars($article['a_title']) ?></p>
+ <?php if (!empty($annonce)) { ?>
+        <div class="container text-center mb-5">
+            <div class="row">
+                <?php foreach ($annonce as $article) { ?>
+                <?php $url = "index.php?url=details/". $article['a_id']?>
+                <a href='<?= $url ?>' class="text-decoration-none text-dark col-4 border">
+                    <div class="row">
+                        <div class="col-7 text-start">
+                            <p><?= htmlspecialchars($article['a_title']) ?></p>
+                        </div>
+                        <div class="col-5 text-end">
+                            <p>par <?= htmlspecialchars($article['u_username']) ?></p>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col cadre">
-                        <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                    <div class="row">
+                        <div class="col cadre">
+                            <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col mt-2">
-                        <p><?= $article['a_description'] ?></p>
+                    <div class="row">
+                        <div class="col mt-2">
+                            <p><?= $article['a_description'] ?></p>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col mb-2">
-                        <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
+                    <div class="row">
+                        <div class="col mb-2">
+                            <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
+                        </div>
                     </div>
-                </div>
+                </a>
+                <?php } ?>
             </div>
-            </a>
-            <?php } ?>
         </div>
-    </div>
     <?php } else { ?>
     <p class="fs-3">Aucune annonce</p>
     <?php } ?>

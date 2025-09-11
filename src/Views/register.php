@@ -4,94 +4,14 @@ session_start();
 session_unset();
 session_destroy();
 
-$host = 'db';         // Nom du service MySQL dans Docker
-$port = 3306;         // Port MySQL
-$db   = 'leboncoin';  // Nom de la base
-$user = 'root';       // Utilisateur
-$pass = 'root';       // Mot de passe
+use App\Models\Database;
 
-$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4"; //Génère le chemin de connection
-$pdo = new PDO($dsn, $user, $pass); //Fais la connection   
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Gère les erreurs
+$pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
 $nom = "/^[a-z0-9.-]+$/i"; //Regex
 $erreur = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    if(isset($_POST["email"])) {
-        if (empty($_POST["email"])) {
-            $erreur["email"] = "Veuillez inscrire votre email";
-        } else if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
-            $erreur["email"] = "Mail non valide";
-        } else if (strlen($_POST["email"]) > 50) { //strlen regarde la longueur d'une chaîne
-            $erreur["email"] = "Mail trop long";
-        }
-    }
-
-    if(isset($_POST["pseudo"])) {
-        if (empty($_POST["pseudo"])) {
-            $erreur["pseudo"] = "Veuillez inscrire votre pseudo";
-        } else if (!preg_match($nom, $_POST["pseudo"])) {
-            $erreur["pseudo"] = "Charactère non valide";
-        } else if (strlen($_POST["pseudo"]) < 4) {
-            $erreur["pseudo"] = "Pseudo trop court";
-        } else if (strlen($_POST["pseudo"]) > 25) {
-            $erreur["pseudo"] = "Pseudo trop long";
-        }
-    }
-
-    if(isset($_POST["mdp"])) {
-        if (empty($_POST["mdp"])) {
-            $erreur["mdp"] = "Veuillez rentrer votre mot de passe";
-        } else if (strlen($_POST["mdp"]) < 6) {
-            $erreur["mdp"] = "Mot de passe trop court";
-        } else if (strlen($_POST["mdp"]) > 20) {
-            $erreur["mdp"] = "Mot de passe trop long";
-        }
-    }
-
-    if(isset($_POST["mdpVerif"])) {
-        if (empty($_POST["mdpVerif"])) {
-            $erreur["mdpVerif"] = "Veuillez confirmer votre mot de passe";
-        }
-        else if (!empty($_POST["mdp"]) && ($_POST["mdp"] != $_POST["mdpVerif"])) {
-            $erreur["mdpVerif"] = "Votre mot de passe n'est pas le même";
-        }
-    }
-
-    if(empty($erreur)){
-
-        // Vérifier si l'email existe
-        $stmt = $pdo->prepare("SELECT u_id FROM users WHERE u_email = :email");
-        $stmt->execute(['email' =>  $_POST['email']]);
-        if ($stmt->fetch()) {
-            $erreur["email"] = "Adresse email déjà utilisée";
-        }
-
-        // Vérifier si le pseudo existe
-        $stmt = $pdo->prepare("SELECT u_id FROM users WHERE u_username = :pseudo");
-        $stmt->execute(['pseudo' => $_POST['pseudo']]);
-        if ($stmt->fetch()) {
-            $erreur["pseudo"] = "Pseudo déjà utilisé";
-        }
-
-        
-        $mdp = password_hash($_POST['mdpVerif'], PASSWORD_DEFAULT);
-        try {
-        //Requete
-        $stmt = $pdo->prepare("INSERT INTO users (u_email, u_password, u_username) VALUES (:email, :mdp, :pseudo)"); 
-        // Exécution avec les valeurs
-        $stmt->execute([
-            ':email' => $_POST['email'],
-            ':mdp' => $mdp,
-            ':pseudo' => $_POST['pseudo']
-        ]);
-        header("Location: index.php?url=login");
-        } catch (PDOException $e) {
-        }
-    }
-
 }
 
 ?>
@@ -113,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
 
- <navbar>
+    <navbar>
         <div class="container text-center">
             <div class="row pt-2 my-auto">
                 <div class="col-8 text-start mt-2">
@@ -155,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php } ?>
                 </div>
             </div>
+        </div>
     </navbar>
 
     <hr>
@@ -168,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="mb-3 text-start">
                         <label for="exampleFormControlInput1" class="form-label">Email</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["email"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $errors["email"] ?? '' ?></span>
                         <input type="text" class="form-control" id="email" name="email"
                             placeholder="Exemple: TheoduleLabit@email.com"
                             value="<?= htmlspecialchars($_POST["email"] ?? "") ?>">
@@ -178,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="mb-3 text-start">
                         <label for="exampleFormControlInput1" class="form-label">Pseudo</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["pseudo"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $errors["pseudo"] ?? '' ?></span>
                         <input type="text" class="form-control" id="pseudo" name="pseudo"
                             placeholder="Exemple: TheoduleLabit@email.com"
                             value="<?= htmlspecialchars($_POST["pseudo"] ?? "") ?>">
@@ -190,7 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="mb-3 text-start">
                         <label for="exampleFormControlInput1" class="form-label">Mot de passe</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["mdp"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $errors["mdp"] ?? '' ?></span>
                         <input type="password" class="form-control" id="mdp" name="mdp"
                             placeholder="Exemple: TheoduleLabit@email.com"
                             value="<?= htmlspecialchars($_POST["mdp"] ?? "") ?>">
@@ -201,7 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="exampleFormControlInput1" class="form-label">Confirmer votre mot de
                             passe</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["mdpVerif"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $errors["mdpVerif"] ?? '' ?></span>
                         <input type="password" class="form-control" id="mdpVerif" name="mdpVerif"
                             placeholder="Exemple: TheoduleLabit@email.com"
                             value="<?= htmlspecialchars($_POST["mdpVerif"] ?? "") ?>">

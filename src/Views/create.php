@@ -2,17 +2,8 @@
 
 session_start();
 
-
-$host = 'db';         // Nom du service MySQL dans Docker
-$port = 3306;         // Port MySQL
-$db   = 'leboncoin';  // Nom de la base
-$user = 'root';       // Utilisateur
-$pass = 'root';       // Mot de passe
-
-$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4"; //Génère le chemin de connection
-$pdo = new PDO($dsn, $user, $pass); //Fais la connection   
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Gère les erreurs
-
+use App\Models\Database;
+$pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
 $nom = "/^[a-z0-9.-]+$/i"; //Regex
 $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex

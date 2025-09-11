@@ -63,6 +63,7 @@
     <hr>
 
     <div class="text-center">
+        <h1 class="my-5">Accueil</h1>
         <a href="index.php?url=annonces" class="btn bouton"><button class="boutton" type="submit">Voir les
                 annonces</button></a>
     </div>

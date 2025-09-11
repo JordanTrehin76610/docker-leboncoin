@@ -5,7 +5,6 @@ use PDO;
 
 class Database
 {
-
     public static function getConnection(): PDO {
         $host = 'db';         // Nom du service MySQL dans Docker
         $port = 3306;         // Port MySQL
@@ -16,8 +15,9 @@ class Database
         $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4"; //Génère le chemin de connection
         $pdo = new PDO($dsn, $user, $pass); //Fais la connection   
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Gère les erreurs
+
+        return $pdo;
     }
-   
 }
 
 ?>

@@ -2,63 +2,13 @@
 
 session_start();
 
-$host = 'db';         // Nom du service MySQL dans Docker
-$port = 3306;         // Port MySQL
-$db   = 'leboncoin';  // Nom de la base
-$user = 'root';       // Utilisateur
-$pass = 'root';       // Mot de passe
-
-$dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4"; //Génère le chemin de connection
-$pdo = new PDO($dsn, $user, $pass); //Fais la connection   
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Gère les erreurs
-
+use App\Models\Database;
+$pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
 $erreur = [];
 $email = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    // Vérification email
-    $email = $_POST["email"] ?? '';
-    $mdp = $_POST["mdp"] ?? '';
-
-    if (empty($email)) {
-        $erreur["email"] = "Veuillez inscrire votre email";
-    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $erreur["email"] = "Mail non valide";
-    }
-
-    // Vérification mot de passe
-    if (empty($mdp)) {
-        $erreur["mdp"] = "Veuillez inscrire votre mot de passe";
-    }
-
-    // Si pas d'erreur sur email/mdp, on va chercher l'utilisateur
-    if (empty($erreur)) {
-        try {
-            $stmt = $pdo->prepare("SELECT u_id, u_username, u_email, u_password, u_inscription FROM users WHERE u_email = :email");
-            $stmt->execute(['email' => $email]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($user && password_verify($mdp, $user['u_password'])) {
-                //stocke dans session
-                $_SESSION['id'] = $user['u_id'];
-                $_SESSION['username'] = $user['u_username'];
-                $_SESSION['email'] = $user['u_email'];
-                $_SESSION['date'] = $user['u_inscription'];
-
-                // Redirection
-                header("Location: index.php?url=profil");
-                exit;
-
-            } else {
-                $erreur['connexion'] = "Adresse mail ou mot de passe incorrect";
-            }
-
-        } catch (PDOException $e) {
-            die("❌ Erreur : " . $e->getMessage());
-        }
-    }
 }
 ?>
 

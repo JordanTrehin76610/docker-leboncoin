@@ -3,6 +3,7 @@
 use App\Controllers\HomeController;
 use App\Controllers\UserController;
 use App\Controllers\AnnonceController;
+use App\Models\Database;
 
 if (empty($_GET['url'])) {
     $url = ['home'];
@@ -24,27 +25,44 @@ switch ($url[0]) {
         $controller->login();
         break;
     case "profil":
-        $controller = new UserController();
-        $controller->profil();
+        if (isset($_SESSION['username'])) { //Disponible que si connecté
+            $controller = new HomeController();
+            $controller->page404();
+        } else {
+            $controller = new UserController();
+            $controller->profil();
+        }
         break;
     case "logout":
-        $controller = new UserController();
-        $controller->logout();
+        if (isset($_SESSION['username'])) { //Disponible que si connecté
+            $controller = new HomeController();
+            $controller->page404();
+        } else {
+            $controller = new UserController();
+            $controller->logout();
+        }
         break;
     case "annonces":
         $controller = new AnnonceController();
         $controller->index();
         break;
     case "create":
-        $controller = new AnnonceController();
-        $controller->create();
+        if (isset($_SESSION['username'])) { //Disponible que si connecté
+            $controller = new HomeController();
+            $controller->page404();
+        } else {
+            $controller = new AnnonceController();
+            $controller->create();
+        }
         break;
     case "details":
-        $controller = new AnnonceController();
-        $controller->show($url[1]);
-        break;
-    default:
-        header("Location: index.php"); // Redirection si l'id n'est pas un nombre ou est négatif ou supérieur au nombre de pokémon
+        if (isset($url[1]) && is_numeric($url[1]) && $url[1] > 0) { //Disponible que si id est un nombre et est positif
+            $controller = new AnnonceController();
+            $controller->show($url[1]);
+        } else {
+            $controller = new HomeController();
+            $controller->page404();
+        }
         break;
 }
 
