@@ -83,8 +83,6 @@ class Annonce
 
     public function findAll(): array {
 
-        session_start();
-
         $pdo = Database::getConnection();
         
         try {
@@ -102,7 +100,6 @@ class Annonce
 
 
     public function findById(int $id): ?array {
-        session_start();
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
@@ -118,9 +115,19 @@ class Annonce
         return $_SESSION['annonce'];
     }
 
-    // public function findByUser(int $userId): array {
-        
-    // }
+    public function delete(int $id): bool {
+
+        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+
+        try {
+            $sql = "DELETE FROM annonces WHERE a_id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['id' => $id]);
+            return true;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
    
 }
 

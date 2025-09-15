@@ -106,29 +106,34 @@
         <div class="container text-center mb-5">
             <div class="row">
                 <?php foreach ($_SESSION['annonces'] as $article) { ?>
-                <?php $url = "index.php?url=details/". $article['a_id']?>
-                <a href='<?= $url ?>' class="text-decoration-none text-dark col-4 border">
-                    <div class="row">
-                        <div class="col text-start">
-                            <p><?= htmlspecialchars($article['a_title']) ?></p>
+                <div class="col-4">
+                    <?php $url = "index.php?url=details/". $article['a_id']?>
+                    <a href='<?= $url ?>' class="text-decoration-none text-dark col-4 border">
+                        <div class="row">
+                            <div class="col text-start">
+                                <p><?= htmlspecialchars($article['a_title']) ?></p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col cadre">
-                            <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                        <div class="row">
+                            <div class="col cadre">
+                                <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col mt-2">
-                            <p><?= $article['a_description'] ?></p>
+                        <div class="row">
+                            <div class="col mt-2">
+                                <p><?= $article['a_description'] ?></p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col mb-2">
-                            <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
+                        <div class="row">
+                            <div class="col mb-2">
+                                <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
+                            </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                    <button class="btn bouton-danger" type="submit"
+                        onclick="location.href='index.php?url=delete/<?= $article['a_id'] ?>'"><i
+                            class="bi bi-trash3-fill"></i></button>
+                </div>
                 <?php } ?>
             </div>
         </div>

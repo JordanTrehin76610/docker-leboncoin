@@ -1,22 +1,3 @@
-<?php
-
-session_start();
-session_unset();
-session_destroy();
-
-use App\Models\Database;
-
-$pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
-
-$nom = "/^[a-z0-9.-]+$/i"; //Regex
-$erreur = [];
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-}
-
-?>
-
-
 <!DOCTYPE html>
 <html lang="fr">
 

@@ -1,16 +1,3 @@
-<?php
-
-use App\Models\Database;
-$pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
-
-$erreur = [];
-$email = "";
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-}
-?>
-
-
 <!DOCTYPE html>
 <html lang="fr">
 

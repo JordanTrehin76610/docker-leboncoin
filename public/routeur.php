@@ -28,8 +28,9 @@ switch ($url[0]) {
             $controller = new HomeController();
             $controller->page404();
         } else {
+            session_start();
             $controller = new UserController();
-            $controller->profil($url[1]);
+            $controller->profil($url[1] ?? $_SESSION['id']); // Si pas d'id dans l'url, on prend l'id de la session
         }
         break;
     case "logout":
@@ -58,6 +59,15 @@ switch ($url[0]) {
         if (isset($url[1]) && is_numeric($url[1]) && $url[1] > 0) { //Disponible que si id est un nombre et est positif
             $controller = new AnnonceController();
             $controller->show($url[1]);
+        } else {
+            $controller = new HomeController();
+            $controller->page404();
+        }
+        break;
+    case "delete":
+        if (isset($url[1]) && is_numeric($url[1]) && $url[1] > 0) { //Disponible que si id est un nombre et est positif
+            $controller = new AnnonceController();
+            $controller->delete($url[1]);
         } else {
             $controller = new HomeController();
             $controller->page404();

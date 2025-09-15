@@ -10,7 +10,12 @@ class UserController
 {
 
     public function register(): void {
+
+        session_start();
+        session_unset();
+        session_destroy();
         $errors = [];
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = new User();
             $result = $user->createUser(
@@ -33,7 +38,10 @@ class UserController
     
 
     public function login(): void {
-        session_start();
+        if(!isset($_SESSION['username'])) 
+        { 
+            session_start(); 
+        } 
         // Vérification email
         $email = $_POST["email"] ?? '';
         $mdp = $_POST["mdp"] ?? '';
@@ -88,7 +96,10 @@ class UserController
 
     public function profil($id): void {
 
-        session_start();
+        if(!isset($_SESSION['username'])) 
+        { 
+            session_start(); 
+        } 
 
         // Récupère les infos utilisateur
         try {
@@ -123,8 +134,8 @@ class UserController
 
     public function logout(): void {
         session_start();
-        session_destroy();
         session_unset();
+        session_destroy();
         header("Location: index.php?url=home");
     }
 }
