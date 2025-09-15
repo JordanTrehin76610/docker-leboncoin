@@ -38,10 +38,15 @@ class UserController
     
 
     public function login(): void {
+
         if(!isset($_SESSION['username'])) 
         { 
             session_start(); 
         } 
+
+        $erreur = [];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Vérification email
         $email = $_POST["email"] ?? '';
         $mdp = $_POST["mdp"] ?? '';
@@ -91,6 +96,7 @@ class UserController
                 // die("❌ Erreur : " . $e->getMessage());
             }
         }
+    }
         require_once __DIR__ . '/../views/login.php';   // On envoie ça à une vue
     }
 
