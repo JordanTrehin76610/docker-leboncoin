@@ -71,7 +71,7 @@
                 <div class="col">
                     <label for="exampleFormControlInput1" class="form-label">Photo</label><span
                         style="color: red !important; display: inline; float: none;">*</span><span
-                        class="ms-2 text-danger fst-italic fw-light"><?= $erreur["photo"] ?? '' ?></span>
+                        class="ms-2 text-danger fst-italic fw-light"><?= $_SESSION['erreur']["photo"] ?? '' ?></span>
                     <input type="file" class="form-control" name="photo" id="photo">
                 </div>
             </div>
@@ -80,7 +80,7 @@
                     <div class="mb-3 text-start">
                         <label for="exampleFormControlInput1" class="form-label">Titre</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["titre"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $_SESSION['erreur']["titre"] ?? '' ?></span>
                         <input type="text" class="form-control" id="titre" name="titre"
                             placeholder="Exemple: Table faite en saucisse"
                             value="<?= htmlspecialchars($_POST["titre"] ?? "") ?>">
@@ -90,7 +90,7 @@
                     <div class="mb-3 text-start">
                         <label for="exampleFormControlInput1" class="form-label">Prix</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["prix"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $_SESSION['erreur']["prix"] ?? '' ?></span>
                         <input type="number" class="form-control" id="prix" name="prix" placeholder="Exemple: 20 €"
                             value="<?= htmlspecialchars($_POST["prix"] ?? "") ?>">
                     </div>
@@ -101,7 +101,7 @@
                     <div class="mb-3 text-start">
                         <label for="exampleFormControlInput1" class="form-label">Description</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["description"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $_SESSION['erreur']["description"] ?? '' ?></span>
                         <textarea type="text" class="form-control pb-3" id="description" name="description"
                             placeholder="Ecrivez votre message ici"><?= (isset($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
                     </div>

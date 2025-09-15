@@ -81,11 +81,15 @@
                     </div>
                     <div class="row">
                         <div class="col cadre">
-                            <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                            <?php if (is_file($article['a_picture'])){ ?>
+                                <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                            <?php } else { ?>
+                                <img src="uploads/default.png" alt="Photo de l'article" class="photo border">
+                            <?php } ?>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col mt-2">
+                        <div class="col mt-2 description">
                             <p><?= $article['a_description'] ?></p>
                         </div>
                     </div>

@@ -105,13 +105,6 @@ class User
             return $erreur;
         }
     }
-
-
-
-
-    // public function findById(int $id): ?array {
-        
-    // }
    
 }
 

@@ -65,7 +65,11 @@
         <div class="container text-center">
             <div class="row">
                 <div class="col border-end">
-                    <img src="<?= $_SESSION['annonce']['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                    <?php if (is_file($_SESSION['annonce']['a_picture'])){ ?>
+                        <img src="<?= $_SESSION['annonce']['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                    <?php } else { ?>
+                        <img src="uploads/default.png" alt="Photo de l'article" class="photo border">
+                    <?php } ?>
                 </div>
                 <div class="col text-start ps-5">
                     <div class="row">

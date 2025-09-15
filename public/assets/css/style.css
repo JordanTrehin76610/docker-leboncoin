@@ -22,3 +22,8 @@
 .cadre {
     height: 20rem;
 }
+
+.description {
+    height: 5rem;
+    overflow: auto;
+}

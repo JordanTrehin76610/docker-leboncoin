@@ -42,7 +42,7 @@ class AnnonceController
         } 
         $delete = new Annonce();
         $delete->delete($id);
-        header("Location: index.php?url=profil/" . $_SESSION['id']);
+        header("Location: index.php?url=profil/".$_SESSION['id']);
         exit;
     }
     

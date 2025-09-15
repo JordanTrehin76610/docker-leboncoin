@@ -3,6 +3,7 @@ namespace App\Models;
 
 use App\Models\Database;
 use PDO;
+use PDOException;
 
 class Annonce
 {
@@ -11,18 +12,18 @@ class Annonce
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
         $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex
-        $erreur = [];
-        // var_dump($_FILES);
+        $_SESSION['erreur'] = [];
+
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if(isset($photo)) {
-                if ($photo['name'] == '' ) {
-                    $erreur['photo'] = "Veuillez choisir une photo pour votre article";
-                } else if ($photo['type'] !== 'image/jpeg' && $photo['type'] !== 'image/jpg' && $photo['type'] !== 'image/png' && $photo['type'] !== 'image/webp') {
-                    $erreur['photo'] = "Mauvais type de fichier";
-                } else if ($photo['size'] > 9000000) {
-                    $erreur['photo'] = "Fichier trop lourd, image de moins 8Mo uniquement";
+                if (empty($photo)) {
+                    if ($photo['type'] !== 'image/jpeg' && $photo['type'] !== 'image/jpg' && $photo['type'] !== 'image/png' && $photo['type'] !== 'image/webp') {
+                        $erreur['photo'] = "Mauvais type de fichier";
+                    } else if ($photo['size'] > 9000000) {
+                        $erreur['photo'] = "Fichier trop lourd, image de moins 8Mo uniquement";
+                    }
                 }
             }
 
@@ -55,8 +56,13 @@ class Annonce
             if(empty($erreur)){
                 $tmpName = $photo['tmp_name'];
                 $name = $photo['name'];
-                $chemin = 'uploads/'.$userId.'_'.$name;
-                move_uploaded_file($tmpName, __DIR__ . '/../../public/uploads/'.$userId.'_'.$name); //Enregistre le fichier photo
+                if (!isset($photo) || $photo['name'] == '') {
+                    $chemin = 'uploads/default.png';
+                } else {
+                    $chemin = 'uploads/'.$userId.'_'.$name;
+                }
+                $today = date("Ymd");  
+                move_uploaded_file($tmpName, __DIR__ . '/../../public/uploads/'.$userId.'_'.$today.'_'.$name); //Enregistre le fichier photo
                 try {
                 //Requete
                 $stmt = $pdo->prepare("INSERT INTO annonces (a_title, a_description, a_price, a_picture, u_id) VALUES (:titre, :descriptions, :prix, :photo, :utilisateur)"); 
@@ -74,7 +80,11 @@ class Annonce
                 } catch (PDOException $e) {
                     return false;
                 }
+            } else {
+                $_SESSION['erreur'] = $erreur;
+                return false;
             }
+            return false;
         }
         return false;
     }
