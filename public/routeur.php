@@ -124,8 +124,10 @@ switch ($url[0]) {
         break;
 
     case "edit":
-        $id = $url[1] ?? 0; // Récupère l'id dans l'url s'il y en a un, sinon 0
 
+        session_start();
+
+        $id = $url[1]; // Récupère l'id dans l'url s'il y en a un, sinon 0
 
         $pdo = Database::getConnection(); //On se connecte à la base de données
         $sql = "SELECT * FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe

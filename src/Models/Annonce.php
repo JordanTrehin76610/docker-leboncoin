@@ -144,7 +144,6 @@ class Annonce
 
         $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex
         $_SESSION['erreur'] = [];
-        $_SESSION['annonce'] = [];
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
@@ -158,6 +157,7 @@ class Annonce
         }
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
         switch ($action) {
             case 10:
                 if(empty($_POST['titre'])) {
@@ -175,7 +175,7 @@ class Annonce
                         exit;
                         return $_SESSION['annonce'];   
                     } catch (PDOException $e) {
-                        return false;
+                        return $_SESSION['annonce'];   
                     }
                 }
                 break;
@@ -193,7 +193,7 @@ class Annonce
                         exit;
                         return $_SESSION['annonce'];
                     } catch (PDOException $e) {
-                        return false;
+                        return $_SESSION['annonce'];   
                     }
                 }
                 break;
@@ -217,7 +217,7 @@ class Annonce
                         exit;
                         return $_SESSION['annonce'];    
                     } catch (PDOException $e) {
-                        return false;
+                        return $_SESSION['annonce'];   
                     }
                 }
                 break;

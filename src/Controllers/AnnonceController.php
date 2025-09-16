@@ -53,11 +53,13 @@ class AnnonceController
         } 
         $edit = new Annonce();
         if (isset($_POST['titre'])) {
-            $edit->editAnnonce($id ?? 0, 10, $_POST['titre']);
+            $edit->editAnnonce($id, 10, $_POST['titre']);
         } else if (isset($_POST['description'])) {
-            $edit->editAnnonce($id ?? 0, 20, $_POST['description']);
+            $edit->editAnnonce($id, 20, $_POST['description']);
         } else if (isset($_POST['prix'])) {
-            $edit->editAnnonce($id ?? 0, 30, $_POST['prix']);
+            $edit->editAnnonce($id, 30, $_POST['prix']);
+        } else {
+             $edit->editAnnonce($id, 30, '');
         }
         require_once __DIR__ . '/../views/edit.php';   // On envoie ça à une vue
     }

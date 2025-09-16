@@ -28,10 +28,10 @@
                 <?php $url = "index.php?url=details/". $article['a_id']?>
                 <a href='<?= $url ?>' class="text-decoration-none text-dark col-4 border">
                     <div class="row">
-                        <div class="col-6 text-start overflow-x-hidden text-nowrap">
+                        <div class="col-7 text-start overflow-x-hidden text-nowrap">
                             <p><?= htmlspecialchars($article['a_title']) ?></p>
                         </div>
-                        <div class="col-6 text-end overflow-x-hidden text-nowrap">
+                        <div class="col-5 text-end overflow-x-hidden text-nowrap">
                             <p><?= htmlspecialchars($article['u_username']) ?></p>
                         </div>
                     </div>
