@@ -62,11 +62,11 @@
         <div class="container text-center mb-5">
             <div class="row">
                 <?php foreach ($_SESSION['annonces'] as $article) { ?>
-                <div class="col-4">
+                <div class="col-4 border">
                     <?php $url = "index.php?url=details/". $article['a_id']?>
-                    <a href='<?= $url ?>' class="text-decoration-none text-dark col-4 border">
+                    <a href='<?= $url ?>' class="text-decoration-none text-dark col-4">
                         <div class="row">
-                            <div class="col text-start">
+                            <div class="col text-start overflow-x-hidden text-nowrap">
                                 <p><?= htmlspecialchars($article['a_title']) ?></p>
                             </div>
                         </div>
@@ -93,6 +93,8 @@
                     <button class="btn bouton-danger" type="submit"
                         onclick="location.href='index.php?url=delete/<?= $article['a_id'] ?>'"><i
                             class="bi bi-trash3-fill"></i></button>
+                    <button class="btn bouton-danger ms-5" type="submit"
+                        onclick="location.href='index.php?url=edit/<?= $article['a_id'] ?>'"><i class="bi bi-pencil-fill"></i></button>
                 </div>
                 <?php } ?>
             </div>

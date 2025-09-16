@@ -102,11 +102,6 @@ class UserController
 
     public function profil($id): void {
 
-        if(!isset($_SESSION['username'])) 
-        { 
-            session_start(); 
-        } 
-
         // Récupère les infos utilisateur
         try {
             $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard

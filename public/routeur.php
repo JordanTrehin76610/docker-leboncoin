@@ -32,7 +32,12 @@ switch ($url[0]) {
 
     case "profil":
 
-        $id = $url[1] ?? 0; // Récupère l'id dans l'url s'il y en a un, sinon 0
+        session_start();
+        if (empty($_SESSION['id'])) {
+            $id = $url[1] ?? 0; // Récupère l'id dans l'url s'il y en a un, sinon 0
+        } else {
+            $id = $_SESSION['id'];
+        }
 
         $pdo = Database::getConnection(); //On se connecte à la base de données
         $sql = "SELECT * FROM users WHERE u_id = :id"; //On regarde si l'utilisateur avec cet id existe
@@ -41,7 +46,6 @@ switch ($url[0]) {
         $exists = $stmt->fetchColumn(); //On remplie la variable $exists avec le résultat de la requête
 
         if ($exists) { //Si le résultat n'est pas vide alors go
-            session_start();
             $controller = new UserController();
             $controller->profil($id ?? $_SESSION['id']); // Si pas d'id dans l'url, on prend l'id de la session
         } else {
@@ -118,6 +122,24 @@ switch ($url[0]) {
             $controller->page404();
         }
         break;
+
+    case "edit":
+        $id = $url[1] ?? 0; // Récupère l'id dans l'url s'il y en a un, sinon 0
+
+
+        $pdo = Database::getConnection(); //On se connecte à la base de données
+        $sql = "SELECT * FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        $exists = $stmt->fetchColumn(); //On remplie la variable $exists avec le résultat de la requête
+
+        if ($exists) { //Si le résultat n'est pas vide alors go
+            $controller = new AnnonceController();
+            $controller->edit($id);
+        } else {
+            $controller = new HomeController();
+            $controller->page404();
+        }
 }
 
 ?>

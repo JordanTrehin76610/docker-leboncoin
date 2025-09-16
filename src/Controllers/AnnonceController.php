@@ -45,7 +45,21 @@ class AnnonceController
         header("Location: index.php?url=profil/".$_SESSION['id']);
         exit;
     }
-    
-}
 
+    public function edit(?int $id): void {
+        if(!isset($_SESSION['username'])) 
+        { 
+            session_start(); 
+        } 
+        $edit = new Annonce();
+        if (isset($_POST['titre'])) {
+            $edit->editAnnonce($id ?? 0, 10, $_POST['titre']);
+        } else if (isset($_POST['description'])) {
+            $edit->editAnnonce($id ?? 0, 20, $_POST['description']);
+        } else if (isset($_POST['prix'])) {
+            $edit->editAnnonce($id ?? 0, 30, $_POST['prix']);
+        }
+        require_once __DIR__ . '/../views/edit.php';   // On envoie ça à une vue
+    }
+}
 ?>
