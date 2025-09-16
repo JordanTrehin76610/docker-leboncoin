@@ -80,7 +80,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col mt-2 description">
+                            <div class="col mt-2 description overflow-x-hidden text-nowrap">
                                 <p><?= $article['a_description'] ?></p>
                             </div>
                         </div>

@@ -50,6 +50,8 @@ class Annonce
             if(isset($description)) {
                 if (empty($description)) {
                     $erreur["description"] = "Veuillez décrire votre articles";
+                } else if (strlen($description) > 250) { 
+                    $erreur["description"] = "Description trop longue";
                 }
             }
 
@@ -182,6 +184,8 @@ class Annonce
             case 20:
                 if(empty($_POST['description'])) {
                     $_SESSION['erreur']['description'] = "Veuillez inscrire une description";
+                } else if (strlen($_POST['description']) > 100) { 
+                    $_SESSION['erreur']['description'] = "Description trop longue";
                 } else {
                     try {
                         $stmt = $pdo->prepare("UPDATE annonces SET a_description = :description WHERE a_id = :id");
