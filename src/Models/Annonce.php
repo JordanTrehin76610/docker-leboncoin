@@ -102,7 +102,6 @@ class Annonce
             $stmt->execute();
             $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $_SESSION['annonce'] = $annonce;
-
         } catch (PDOException $e) {
             die("❌ Erreur SQL : " . $e->getMessage());
         }
@@ -132,6 +131,14 @@ class Annonce
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
+            $sql = "SELECT a_picture FROM annonces WHERE a_id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['id' => $id]);
+            $picture = $stmt->fetchColumn();
+            if ($picture && is_file($picture) && $picture != 'uploads/default.png') {
+                unlink($picture); //Supprime le fichier de l'annonce
+            }
+
             $sql = "DELETE FROM annonces WHERE a_id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['id' => $id]);
@@ -225,11 +232,101 @@ class Annonce
                     }
                 }
                 break;
+            case 40:
+                //On supprime l'ancienne photo
+                $stmt = $pdo->prepare("SELECT a_picture FROM annonces WHERE a_id = :id");
+                $stmt->execute([':id' => $id]);
+                $annonce = $stmt->fetch(PDO::FETCH_ASSOC);
+                $picture = $annonce['a_picture'];
+                if ($picture && is_file($picture) && $picture != 'uploads/default.png') {
+                    unlink($picture); //Supprime le fichier de l'annonce
+                }
+
+                //On ajoute la nouvelle photo
+                $tmpName = $_FILES['photo']['tmp_name'];
+                $name = $_FILES['photo']['name'];
+                $today = date("Ymd");  
+                $chemin = 'uploads/'.$_SESSION['id'].'_'.$today.'_'.$name;
+                move_uploaded_file($tmpName, __DIR__ . '/../../public/uploads/'.$_SESSION['id'].'_'.$today.'_'.$name); //Enregistre le fichier photo
+                try {
+                    $stmt = $pdo->prepare("UPDATE annonces SET a_picture = :photo WHERE a_id = :id");
+                    $stmt->execute([
+                        ':photo' => $chemin,
+                        ':id' => $id
+                    ]);
+                    header("Location: index.php?url=details/".$id);
+                    exit;
+                    return $_SESSION['annonce'];    
+                } catch (PDOException $e) {
+                    return $_SESSION['annonce'];   
+                }
+                break;
             }
-            return $_SESSION['annonce'];
         }
         return $_SESSION['annonce'];
     }
+
+
+    public function addFavorite(int $userId, int $annonceId): bool {
+        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+
+        try {
+            //Requete
+            $stmt = $pdo->prepare("INSERT INTO FAVORIS (u_id, a_id) VALUES (:userId, :annonceId)"); 
+            // Exécution avec les valeurs
+            $stmt->execute([
+                ':userId' => $userId,
+                ':annonceId' => $annonceId
+            ]);
+            return true;    
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+
+    public function isFavorite(int $annonceId): bool {
+        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+
+        try {
+            //Requete
+            $stmt = $pdo->prepare("SELECT u_id, a_id FROM FAVORIS WHERE u_id = :userId AND a_id = :annonceId"); 
+            // Exécution avec les valeurs
+            
+            $stmt->execute([
+                ':userId' => $_SESSION['id'],
+                ':annonceId' => $annonceId
+            ]);
+            $exists = $stmt->fetchColumn(); //On remplie la variable $exists avec le résultat de la requête
+
+            if ($exists) { //Agis selon le résultat
+                return true; 
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+
+    public function deleteFavorite(int $userId, int $annonceId): bool {
+        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+
+        try {
+            //Requete
+            $stmt = $pdo->prepare("DELETE FROM FAVORIS WHERE u_id = :userId AND a_id = :annonceId");
+            // Exécution avec les valeurs
+            $stmt->execute([
+                ':userId' => $userId,
+                ':annonceId' => $annonceId
+            ]);
+            return true;    
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
 }
+
 
 ?>

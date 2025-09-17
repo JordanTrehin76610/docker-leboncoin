@@ -72,12 +72,13 @@ class User
             $mdp = password_hash($mdpVerif, PASSWORD_DEFAULT);
             try {
             //Requete
-            $stmt = $pdo->prepare("INSERT INTO users (u_email, u_password, u_username) VALUES (:email, :mdp, :pseudo)"); 
+            $stmt = $pdo->prepare("INSERT INTO users (u_email, u_password, u_username, u_monney) VALUES (:email, :mdp, :pseudo, :monney)"); 
             // Exécution avec les valeurs
             $stmt->execute([
                 ':email' => $email,
                 ':mdp' => $mdp,
-                ':pseudo' => $pseudo
+                ':pseudo' => $pseudo,
+                ':monney' => 0
             ]);
             header("Location: index.php?url=login");
                 return true;
@@ -94,7 +95,7 @@ class User
     public function findByEmail(string $email): ?array {
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
-        $stmt = $pdo->prepare("SELECT u_id, u_username, u_email, u_password, u_inscription FROM users WHERE u_email = :email");
+        $stmt = $pdo->prepare("SELECT u_id, u_username, u_email, u_password, u_inscription, u_monney FROM users WHERE u_email = :email");
         $stmt->execute(['email' => $email]); //Verification si l'email existe
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -105,7 +106,50 @@ class User
             return $erreur;
         }
     }
-   
+
+
+    public function addMoney(int $id, float $amount): bool {
+
+        $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex
+
+        if(isset($amount)) {
+            if (empty($amount)) {
+                return false; // Y'a rien
+            } else if (!preg_match($regexPrix, $amount)) {
+                return false; // Montant avec trop de chiffre après la virgule
+            } else if ($amount < 0) {
+                return false; // Montant trop faible
+            } else if ($amount > 999999999) {
+                return false; // Montant trop élevé
+            }
+        }
+
+        $pdo = Database::getConnection();
+
+        try {
+            // Commencer une transaction
+
+            // Récupérer le solde actuel de l'utilisateur
+            $stmt = $pdo->prepare("SELECT u_monney FROM users WHERE u_id = :id");
+            $stmt->execute(['id' => $id]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            $total = $user['u_monney'] + $amount;
+
+            // Mettre à jour le solde de l'utilisateur
+            $stmt = $pdo->prepare("UPDATE users SET u_monney = :newMonney WHERE u_id = :id");
+            $stmt->execute([
+                'newMonney' => $total,
+                'id' => $id
+            ]);
+
+            return true;
+
+        } catch (PDOException $e) {
+            // En cas d'erreur, annuler la transaction
+            return false;
+        }
+    }
 }
 
 ?>

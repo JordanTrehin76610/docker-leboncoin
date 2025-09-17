@@ -9,6 +9,7 @@ use PDOException;
 class UserController
 {
 
+
     public function register(): void {
 
         session_start();
@@ -34,8 +35,6 @@ class UserController
         require __DIR__ . '/../views/register.php'; // La vue peut utiliser $errors
     }
 
-
-    
 
     public function login(): void {
 
@@ -66,7 +65,7 @@ class UserController
         if (empty($erreur)) {
             try {
                 $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
-                $stmt = $pdo->prepare("SELECT u_id, u_username, u_email, u_password, u_inscription FROM users WHERE u_email = :email");
+                $stmt = $pdo->prepare("SELECT u_id, u_username, u_email, u_password, u_inscription, u_monney FROM users WHERE u_email = :email");
                 $stmt->execute(['email' => $email]);
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -80,6 +79,7 @@ class UserController
                         $_SESSION['username'] = $user['u_username'];
                         $_SESSION['date'] = $user['u_inscription'];
                         $_SESSION['email'] = $user['u_email'];
+                        $_SESSION['monney'] = $user['u_monney'];
 
                         // Redirection
                         header("Location: index.php?url=profil/" . $user['u_id']);
@@ -100,12 +100,13 @@ class UserController
         require_once __DIR__ . '/../views/login.php';   // On envoie ça à une vue
     }
 
+
     public function profil($id): void {
 
         // Récupère les infos utilisateur
         try {
             $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
-            $stmt = $pdo->prepare("SELECT u_id, u_username, u_inscription, u_email FROM users WHERE u_id = :id");
+            $stmt = $pdo->prepare("SELECT u_id, u_username, u_inscription, u_email, u_monney FROM users WHERE u_id = :id");
             $stmt->execute(['id' => $id]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -113,6 +114,7 @@ class UserController
             $_SESSION['username'] = $user['u_username'];
             $_SESSION['date'] = $user['u_inscription'];
             $_SESSION['email'] = $user['u_email'];
+            $_SESSION['monney'] = $user['u_monney'];
 
         } catch (PDOException $e) {
             // die("❌ Erreur SQL : " . $e->getMessage());
@@ -131,12 +133,32 @@ class UserController
             // die("❌ Erreur SQL : " . $e->getMessage());
         }
         require_once __DIR__ . '/../views/profil.php';   // On envoie ça à une vue
+        $_SESSION['messageMoney'] = ''; // Réinitialise le message après l'affichage
     }
+
 
     public function logout(): void {
         session_unset();
         session_destroy();
         header("Location: index.php?url=home");
+    }
+
+
+    public function addMoney(): void {
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $money = new User();
+            $result = $money->addMoney($_SESSION['id'], $_POST['money']);
+
+            if ($result == false) {
+                // Gérer l'erreur (par exemple, afficher un message d'erreur)
+                $_SESSION['messageMoney'] = "Erreur lors de l'ajout de fonds. Veuillez réessayer.";
+            } else {
+                $_SESSION['messageMoney'] = "Fonds ajoutés avec succès !";
+            }
+        }
+        header('Location: index.php?url=profil/' . $_SESSION['id']);
+        exit;
     }
 }
 

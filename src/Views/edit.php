@@ -37,16 +37,31 @@ if (!empty($url[2])) {
         <div class="container text-center">
             <div class="row">
                 <div class="col border-end">
+                    <span
+                        class="ms-2 text-danger fst-italic fw-light fs-5"><?= $_SESSION['erreur']["photo"] ?? '' ?></span>
                     <?php if (is_file($_SESSION['annonce']['a_picture'])){ ?>
                     <img src="<?= $_SESSION['annonce']['a_picture'] ?>" alt="Photo de l'article" class="photo border">
                     <?php } else { ?>
                     <img src="uploads/default.png" alt="Photo de l'article" class="photo border">
                     <?php } ?>
+                    <button class="btn bouton-danger ms-5" type="submit"
+                        onclick="location.href='index.php?url=edit/<?= $_SESSION['annonce']['a_id'] ?>/4'"><i
+                            class="bi bi-pencil-fill"></i></button>
+                    <?php if ($edit == 4) { ?>
+                    <form method="post" action="" enctype="multipart/form-data" novalidate>
+                        <div class="row">
+                            <div class="col-8"><input type="file" class="form-control" name="photo" id="photo">
+                            </div>
+                            <div class="col-4"><button class="btn btn-success border" type="submit"><i
+                                        class="bi bi-check-lg"></i></button></div>
+                        </div>
+                    </form>
+                    <?php } ?>
                 </div>
                 <div class="col text-start ps-5">
                     <div class="row">
                         <h2><?= htmlspecialchars($_SESSION['annonce']['a_title']) ?><span
-                        class="ms-2 text-danger fst-italic fw-light fs-5"><?= $_SESSION['erreur']["titre"] ?? '' ?></span><button
+                                class="ms-2 text-danger fst-italic fw-light fs-5"><?= $_SESSION['erreur']["titre"] ?? '' ?></span><button
                                 class="btn bouton-danger ms-5" type="submit"
                                 onclick="location.href='index.php?url=edit/<?= $_SESSION['annonce']['a_id'] ?>/1'"><i
                                     class="bi bi-pencil-fill"></i></button></h2>
@@ -68,8 +83,10 @@ if (!empty($url[2])) {
                         <p><?= htmlspecialchars($_SESSION['annonce']['a_description']) ?><button
                                 class="btn bouton-danger ms-5" type="submit"
                                 onclick="location.href='index.php?url=edit/<?= $_SESSION['annonce']['a_id'] ?>/2'"><i
-                                    class="bi bi-pencil-fill"></i></button><p
-                        class="ms-2 text-danger fst-italic fw-light fs-5"><?= $_SESSION['erreur']["description"] ?? '' ?></p></p>
+                                    class="bi bi-pencil-fill"></i></button>
+                        <p class="ms-2 text-danger fst-italic fw-light fs-5">
+                            <?= $_SESSION['erreur']["description"] ?? '' ?></p>
+                        </p>
                     </div>
                     <?php if ($edit == 2) { ?>
                     <form method="post" action="" enctype="multipart/form-data" novalidate>
@@ -88,7 +105,8 @@ if (!empty($url[2])) {
                                 class="btn bouton-danger ms-5" type="submit"
                                 onclick="location.href='index.php?url=edit/<?= $_SESSION['annonce']['a_id'] ?>/3'"><i
                                     class="bi bi-pencil-fill"></i></button><span
-                        class="ms-5 text-danger fst-italic fw-light fs-5"><?= $_SESSION['erreur']["prix"] ?? '' ?></span></p>
+                                class="ms-5 text-danger fst-italic fw-light fs-5"><?= $_SESSION['erreur']["prix"] ?? '' ?></span>
+                        </p>
                     </div>
                     <?php if ($edit == 3) { ?>
                     <form method="post" action="" enctype="multipart/form-data" novalidate>

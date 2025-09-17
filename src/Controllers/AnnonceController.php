@@ -5,6 +5,8 @@ use App\Models\Annonce;
 
 class AnnonceController
 {
+
+
     public function index(): void {
         if(!isset($_SESSION['username'])) 
         { 
@@ -12,8 +14,15 @@ class AnnonceController
         } 
         $touteAnnonces = new Annonce();
         $touteAnnonces->findAll();
+
+        //Appelle la fonction isFavorite pour chaque annonce et ajoute le résultat dans l'array is_favorite
+        foreach ($_SESSION['annonce'] as &$annonce) {
+            $annonceId = $annonce['a_id'];
+            $annonce['is_favorite'] = $touteAnnonces->isFavorite($annonceId);
+        }
         require_once __DIR__ . '/../views/annonces.php';   // On envoie ça à une vue
     }
+
 
     public function create(): void {
         if(!isset($_SESSION['username'])) 
@@ -25,6 +34,7 @@ class AnnonceController
         require_once __DIR__ . '/../views/create.php';   // On envoie ça à une vue
     }
 
+
     public function show(?int $id): void {
         if(!isset($_SESSION['username'])) 
         { 
@@ -35,18 +45,22 @@ class AnnonceController
         require_once __DIR__ . '/../views/details.php';   // On envoie ça à une vue
     }
 
+
     public function delete(?int $id): void {
         if(!isset($_SESSION['username'])) 
         { 
             session_start(); 
-        } 
+        }
+
         $delete = new Annonce();
         $delete->delete($id);
         header("Location: index.php?url=profil/".$_SESSION['id']);
         exit;
     }
 
+
     public function edit(?int $id): void {
+        $_SESSION['erreur'] = [];
         if(!isset($_SESSION['username'])) 
         { 
             session_start(); 
@@ -58,10 +72,44 @@ class AnnonceController
             $edit->editAnnonce($id, 20, $_POST['description']);
         } else if (isset($_POST['prix'])) {
             $edit->editAnnonce($id, 30, $_POST['prix']);
+        } else if (isset($_FILES['photo'])) {
+            if ($_FILES['photo']['type'] !== 'image/jpeg' && $_FILES['photo']['type'] !== 'image/jpg' && $_FILES['photo']['type'] !== 'image/png' && $_FILES['photo']['type'] !== 'image/webp') {
+                $_SESSION['erreur']['photo'] = "Mauvais type de fichier";
+            } else if ($_FILES['photo']['size'] > 9000000) {
+                $_SESSION['erreur']['photo'] = "Fichier trop lourd, image de moins 8Mo uniquement";
+            } else if (empty($_FILES['photo']['name'])) {
+                $_SESSION['erreur']['photo'] = "Veuillez choisir une photo";
+            } else {
+                $edit->editAnnonce($id, 40, $_FILES['photo']['name']);
+            }
         } else {
-             $edit->editAnnonce($id, 30, '');
+            $edit->editAnnonce($id, 30, '');
         }
         require_once __DIR__ . '/../views/edit.php';   // On envoie ça à une vue
+    }
+
+
+    public function addFav(int $idArticle) {
+        if(!isset($_SESSION['username'])) 
+        { 
+            session_start(); 
+        } 
+        $fav = new Annonce();
+        $fav->addFavorite($_SESSION['id'], $idArticle);
+        header("Location: index.php?url=annonces");
+        exit;
+    }
+
+
+    public function removeFav(int $idArticle) {
+        if(!isset($_SESSION['username'])) 
+        { 
+            session_start(); 
+        } 
+        $fav = new Annonce();
+        $fav->deleteFavorite($_SESSION['id'], $idArticle);
+        header("Location: index.php?url=annonces");
+        exit;
     }
 }
 ?>

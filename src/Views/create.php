@@ -27,7 +27,6 @@
             <div class="row mt-5">
                 <div class="col">
                     <label for="exampleFormControlInput1" class="form-label">Photo</label><span
-                        style="color: red !important; display: inline; float: none;">*</span><span
                         class="ms-2 text-danger fst-italic fw-light"><?= $_SESSION['erreur']["photo"] ?? '' ?></span>
                     <input type="file" class="form-control" name="photo" id="photo">
                 </div>

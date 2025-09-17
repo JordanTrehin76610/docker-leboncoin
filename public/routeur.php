@@ -142,6 +142,43 @@ switch ($url[0]) {
             $controller = new HomeController();
             $controller->page404();
         }
+        break;
+
+    case "money":
+        session_start();
+        if (!isset($_SESSION['username'])) { //Disponible que si connecté
+            $controller = new HomeController();
+            $controller->page404();
+        } else {
+            $controller = new UserController();
+            $controller->addMoney();
+        }
+        break;
+
+    case "addFav":
+        session_start();
+        if (!isset($_SESSION['username'])) { //Disponible que si connecté
+            $controller = new HomeController();
+            $controller->page404();
+        } else {
+            $idArticle = $url[1]; // Récupère l'id dans l'url s'il y en a un, sinon 0
+            $controller = new AnnonceController();
+            $controller->addFav($idArticle);
+        }
+        break;
+
+    case "removeFav":
+        session_start();
+        if (!isset($_SESSION['username'])) { //Disponible que si connecté
+            $controller = new HomeController();
+            $controller->page404();
+        } else {
+            $idArticle = $url[1]; // Récupère l'id dans l'url s'il y en a un, sinon 0
+            $controller = new AnnonceController();
+            $controller->removeFav($idArticle);
+        }
+        break;
+
 }
 
 ?>

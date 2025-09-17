@@ -12,12 +12,13 @@
 
 
 <body>
-<?php include_once 'templates/navbar.php'; ?>
+    <?php include_once 'templates/navbar.php'; ?>
     <hr>
 
     <div class="w-75 mx-auto mt-5">
 
-        <h1>Votre profil</h1>
+        <h1>Votre profil <p class="fs-3"><?= $_SESSION['messageMoney'] ?? '' ?></p>
+        </h1>
 
         <div class="container text-center mt-5">
             <div class="row">
@@ -44,6 +45,24 @@
                     <div class="row text-start">
                         <p><?= $_SESSION['date'] ?></p>
                     </div>
+                </div>
+                <div class="col">
+                    <div class="row text-start">
+                        <p class="fs-3">Porte monnaie:</p>
+                    </div>
+                    <div class="row text-start">
+                        <p><?= $_SESSION['monney'] ?> €</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <form action="index.php?url=money" method="post">
+                        <div class="row">
+                            <button class="boutton" type="submit">Ajouter
+                                des fonds</button>
+                        </div>
+                        <input type="number" class="form-control" id="money" name="money" placeholder="Exemple: 20 €"
+                            value="<?= htmlspecialchars($_POST["money"] ?? "") ?>">
+                    </form>
                 </div>
             </div>
         </div>
@@ -73,9 +92,9 @@
                         <div class="row">
                             <div class="col cadre">
                                 <?php if (is_file($article['a_picture'])){ ?>
-                                    <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                                <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
                                 <?php } else { ?>
-                                    <img src="uploads/default.png" alt="Photo de l'article" class="photo border">
+                                <img src="uploads/default.png" alt="Photo de l'article" class="photo border">
                                 <?php } ?>
                             </div>
                         </div>
@@ -90,11 +109,22 @@
                             </div>
                         </div>
                     </a>
-                    <button class="btn bouton-danger" type="submit"
-                        onclick="location.href='index.php?url=delete/<?= $article['a_id'] ?>'"><i
-                            class="bi bi-trash3-fill"></i></button>
-                    <button class="btn bouton-danger ms-5" type="submit"
-                        onclick="location.href='index.php?url=edit/<?= $article['a_id'] ?>'"><i class="bi bi-pencil-fill"></i></button>
+                    <div class="row">
+                        <div class="col">
+                            <form action="index.php?url=delete/<?= $article['a_id'] ?>" method="post"
+                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?');">
+                                <button class="btn bouton-danger" type="submit"><i
+                                        class="bi bi-trash3-fill"></i></button>
+                            </form>
+
+                        </div>
+                        <div class="col">
+                            <form action="index.php?url=edit/<?= $article['a_id'] ?>" method="post">
+                                <button class="btn bouton-danger ms-5" type="submit"><i
+                                        class="bi bi-pencil-fill"></i></button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 <?php } ?>
             </div>
@@ -102,6 +132,8 @@
         <?php } else { ?>
         <p class="fs-3">Aucune annonce</p>
         <?php } ?>
+
+        <h2 class="mb-5">Vos favoris</h2>
 
     </div>
 

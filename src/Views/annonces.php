@@ -25,36 +25,51 @@
         <div class="container text-center mb-5">
             <div class="row">
                 <?php foreach ($_SESSION['annonce'] as $article) { ?>
-                <?php $url = "index.php?url=details/". $article['a_id']?>
-                <a href='<?= $url ?>' class="text-decoration-none text-dark col-4 border">
-                    <div class="row">
-                        <div class="col-7 text-start overflow-x-hidden text-nowrap ">
-                            <p><?= htmlspecialchars($article['a_title']) ?></p>
+                <div class="col text-decoration-none text-dark col-4 border">
+                    <?php $url = "index.php?url=details/". $article['a_id']?>
+                    <a href='<?= $url ?>' class="text-decoration-none text-dark">
+                        <div class="row">
+                            <div class="col-7 text-start overflow-x-hidden text-nowrap ">
+                                <p><?= htmlspecialchars($article['a_title']) ?></p>
+                            </div>
+                            <div class="col-5 text-end overflow-x-hidden text-wrap">
+                                <p><?= htmlspecialchars($article['u_username']) ?></p>
+                            </div>
                         </div>
-                        <div class="col-5 text-end overflow-x-hidden text-wrap">
-                            <p><?= htmlspecialchars($article['u_username']) ?></p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col cadre">
-                            <?php if (is_file($article['a_picture'])){ ?>
+                        <div class="row">
+                            <div class="col cadre">
+                                <?php if (is_file($article['a_picture'])){ ?>
                                 <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
-                            <?php } else { ?>
+                                <?php } else { ?>
                                 <img src="uploads/default.png" alt="Photo de l'article" class="photo border">
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mt-2 description overflow-x-hidden">
+                                <p><?= $article['a_description'] ?></p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="row">
+                        <div class="col-9 mb-2 ms-5">
+                            <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
+                        </div>
+                        <div class="col-1">
+                            <?php if($article['is_favorite'] == true) { ?>
+                            <form action="index.php?url=removeFav/<?= $article['a_id'] ?>" method="post">
+                                <button type="submit" class="btn btn-warning text-white"><i
+                                        class="bi bi-star-fill"></i></button>
+                            </form>
+                            <?php } else { ?>
+                            <form action="index.php?url=addFav/<?= $article['a_id'] ?>" method="post">
+                                <button type="submit" class="btn btn-warning text-white"><i
+                                        class="bi bi-star"></i></button>
+                            </form>
                             <?php } ?>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col mt-2 description overflow-x-hidden">
-                            <p><?= $article['a_description'] ?></p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col mb-2">
-                            <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
-                        </div>
-                    </div>
-                </a>
+                </div>
                 <?php } ?>
             </div>
         </div>
