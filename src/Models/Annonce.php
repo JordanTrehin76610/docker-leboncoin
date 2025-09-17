@@ -98,14 +98,79 @@ class Annonce
         $pdo = Database::getConnection();
         
         try {
-            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, a_id, u_username FROM annonces INNER JOIN users ON annonces.u_id = users.u_id");
+            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN users ON annonces.u_id = users.u_id");
             $stmt->execute();
             $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $_SESSION['annonce'] = $annonce;
+
+            //Pour virer les articles acheté de la liste principale
+            $achat = $this->achatAll(); //On appelle la fonction pour avoir tous les achats
             foreach ($_SESSION['annonce'] as &$annonce) {
-                $annonceId = $annonce['a_id'];
-                $annonce['is_favorite'] = $this->isFavorite($annonceId);
+                if (isset($achat) && !empty($achat)) {
+                    foreach ($achat as $achatId) {
+                        if ($annonce['a_id'] == $achatId['a_id']) { //On compare les id des annonces avec les id des achats
+                            $annonce['is_achete'] = true;
+                            break; // Si l'annonce a été achetée, on sort de la boucle interne
+                        } else {
+                            $annonce['is_achete'] = false;
+                        }
+                    }
+                } else {
+                    $annonce['is_achete'] = false;
+                }
             }
+
+            //Pour notifier des favoris de l'utilisateur, marche pas si pas connecter
+            if (isset($_SESSION['id'])) {
+                foreach ($_SESSION['annonce'] as &$annonce) { // Pour chaque annonce, on check si elle est en favoris
+                    $annonceId = $annonce['a_id'];
+                    $annonce['is_favorite'] = $this->isFavorite($annonceId);
+                }
+            }
+
+
+        } catch (PDOException $e) {
+            die("❌ Erreur SQL : " . $e->getMessage());
+        }
+        return $_SESSION['annonce'];
+    }
+
+
+    public function search($search): array {
+
+        $pdo = Database::getConnection();
+        try {
+            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE a_title LIKE :search OR u_username LIKE :search");
+            $stmt->execute(['search' => "%$search%"]);
+            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $_SESSION['annonce'] = $annonce;
+
+            //Pour virer les articles acheté de la liste principale
+            $achat = $this->achatAll(); //On appelle la fonction pour avoir tous les achats
+            foreach ($_SESSION['annonce'] as &$annonce) {
+                if (isset($achat) && !empty($achat)) {
+                    foreach ($achat as $achatId) {
+                        if ($annonce['a_id'] == $achatId['a_id']) { //On compare les id des annonces avec les id des achats
+                            $annonce['is_achete'] = true;
+                            break; // Si l'annonce a été achetée, on sort de la boucle interne
+                        } else {
+                            $annonce['is_achete'] = false;
+                        }
+                    }
+                } else {
+                    $annonce['is_achete'] = false;
+                }
+            }
+
+            //Pour notifier des favoris de l'utilisateur, marche pas si pas connecter
+            if (isset($_SESSION['id'])) {
+                foreach ($_SESSION['annonce'] as &$annonce) { // Pour chaque annonce, on check si elle est en favoris
+                    $annonceId = $annonce['a_id'];
+                    $annonce['is_favorite'] = $this->isFavorite($annonceId);
+                }
+            }
+
+
         } catch (PDOException $e) {
             die("❌ Erreur SQL : " . $e->getMessage());
         }
@@ -119,7 +184,7 @@ class Annonce
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
-            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, a_id, u_username, annonces.u_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE a_id = :id");
+            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.a_id, u_username, annonces.u_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE annonces.a_id = :id");
             $stmt->execute(['id' => $id]);
             $annonce = $stmt->fetch(PDO::FETCH_ASSOC);
             $_SESSION['annonce'] = $annonce;
@@ -130,12 +195,13 @@ class Annonce
         return $_SESSION['annonce'];
     }
 
+
     public function delete(int $id): bool {
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
-            $sql = "SELECT a_picture FROM annonces WHERE a_id = :id";
+            $sql = "SELECT a_picture FROM annonces WHERE annonces.a_id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['id' => $id]);
             $picture = $stmt->fetchColumn();
@@ -161,7 +227,7 @@ class Annonce
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
-            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, a_id, u_username, annonces.u_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE a_id = :id");
+            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.a_id, u_username, annonces.u_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE annonces.a_id = :id");
             $stmt->execute(['id' => $id]);
             $annonce = $stmt->fetch(PDO::FETCH_ASSOC);
             $_SESSION['annonce'] = $annonce;
@@ -238,7 +304,7 @@ class Annonce
                 break;
             case 40:
                 //On supprime l'ancienne photo
-                $stmt = $pdo->prepare("SELECT a_picture FROM annonces WHERE a_id = :id");
+                $stmt = $pdo->prepare("SELECT a_picture FROM annonces WHERE annonces.a_id = :id");
                 $stmt->execute([':id' => $id]);
                 $annonce = $stmt->fetch(PDO::FETCH_ASSOC);
                 $picture = $annonce['a_picture'];
@@ -294,7 +360,7 @@ class Annonce
 
         try {
             //Requete
-            $stmt = $pdo->prepare("SELECT u_id, a_id FROM FAVORIS WHERE u_id = :userId AND a_id = :annonceId"); 
+            $stmt = $pdo->prepare("SELECT u_id, FAVORIS.a_id FROM FAVORIS WHERE u_id = :userId AND FAVORIS.a_id = :annonceId"); 
             // Exécution avec les valeurs
             
             $stmt->execute([
@@ -330,7 +396,66 @@ class Annonce
             return false;
         }
     }
-}
 
+
+    public function achat(int $annonceId, int $userId, float $price): bool {
+
+        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+
+        try {
+            //Requete
+            $stmt = $pdo->prepare("INSERT INTO Achat (u_id, a_id) VALUES (:userId, :annonceId)"); 
+            // Exécution avec les valeurs
+            $stmt->execute([
+                ':userId' => $userId,
+                ':annonceId' => $annonceId
+            ]);
+
+            $stmt2 = $pdo->prepare("SELECT u_monney FROM users WHERE u_id = :userId");
+            $stmt2->execute([':userId' => $userId]);
+            $monney = $stmt2->fetchColumn();
+            $total = $monney - $price;
+
+            $stmt3 = $pdo->prepare("UPDATE users SET u_monney = :total WHERE u_id = :userId");
+            $stmt3->execute([
+                ':total' => $total,
+                ':userId' => $userId
+            ]);
+            return true;    
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+
+    public function achatHistoric(int $userId): array {
+        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+
+        try {
+            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN Achat ON annonces.a_id = Achat.a_id INNER JOIN users ON annonces.u_id = users.u_id WHERE Achat.u_id = :userId");
+            $stmt->execute(['userId' => $userId]);
+            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $_SESSION['achat'] = $annonce;
+        } catch (PDOException $e) {
+            die("❌ Erreur SQL : " . $e->getMessage());
+        }
+        return $_SESSION['achat'];
+    }
+
+    
+    public function achatAll(): array {
+        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+
+        try {
+            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN Achat ON annonces.a_id = Achat.a_id INNER JOIN users ON annonces.u_id = users.u_id");
+            $stmt->execute();
+            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $_SESSION['achat'] = $annonce;
+        } catch (PDOException $e) {
+            die("❌ Erreur SQL : " . $e->getMessage());
+        }
+        return $_SESSION['achat'];
+    }
+}
 
 ?>

@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <form action="index.php?url=money" method="post">
+                    <form action="index.php?url=money" method="post" novalidate>
                         <div class="row">
                             <button class="boutton" type="submit">Ajouter
                                 des fonds</button>
@@ -139,9 +139,14 @@
         <?php if (!empty($_SESSION['annonce'])) { ?>
         <div class="container text-center mb-5">
             <div class="row">
-                <?php foreach ($_SESSION['annonce'] as $article) { 
+                <?php foreach ($_SESSION['annonce'] as $article) {
+                    foreach ($_SESSION['achat'] as $achat) {
+                        if ($article['a_id'] == $achat['a_id']) {
+                            continue 2; // Si l'annonce a déjà été achetée, on passe à l'annonce suivante
+                        }
+                    }
                     if ($article['is_favorite'] == true) {?>
-               <div class="col text-decoration-none text-dark col-4 border">
+                <div class="col text-decoration-none text-dark col-4 border">
                     <?php $url = "index.php?url=details/". $article['a_id']?>
                     <a href='<?= $url ?>' class="text-decoration-none text-dark">
                         <div class="row">
@@ -168,7 +173,26 @@
                         </div>
                     </a>
                     <div class="row">
-                        <div class="col-9 mb-2 ms-5">
+                        <?php if ($article['u_id'] == $_SESSION['id']) { ?>
+                        <div class="col-1">
+                            <button type="submit" class="btn btn-secondary text-white"><i
+                                    class="bi bi-bag-fill"></i></button>
+                        </div>
+                        <?php } else if ($article['a_price'] > $_SESSION['monney']) { ?>
+                        <div class="col-1">
+                            <button type="submit" class="btn btn-danger text-white"><i
+                                    class="bi bi-bag-fill"></i></button>
+                        </div>
+                        <?php } else { ?>
+                        <div class="col-1">
+                            <form action="index.php?url=achat/<?= $article['a_id'] ?>/<?= $article['a_price'] ?>"
+                                method="post">
+                                <button type="submit" class="btn btn-success text-white"><i
+                                        class="bi bi-bag-fill"></i></button>
+                            </form>
+                        </div>
+                        <?php } ?>
+                        <div class="col-8 mb-2 ms-5">
                             <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
                         </div>
                         <div class="col-1">
@@ -187,6 +211,48 @@
                     </div>
                 </div>
                 <?php } } ?>
+            </div>
+        </div>
+        <?php } else { ?>
+        <p class="fs-3">Aucune annonce</p>
+        <?php } ?>
+
+        <h2 class="mb-5">Votre historique d'achat</h2>
+
+        <?php if (!empty($_SESSION['achat'])) { ?>
+        <div class="container text-center mb-5">
+            <div class="row">
+                <?php foreach ($_SESSION['achat'] as $article) { ?>
+                <div class="col-4 border">
+                    <?php $url = "index.php?url=details/". $article['a_id']?>
+                    <a href='<?= $url ?>' class="text-decoration-none text-dark col-4">
+                        <div class="row">
+                            <div class="col text-start overflow-x-hidden text-nowrap">
+                                <p><?= htmlspecialchars($article['a_title']) ?></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col cadre">
+                                <?php if (is_file($article['a_picture'])){ ?>
+                                <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                                <?php } else { ?>
+                                <img src="uploads/default.png" alt="Photo de l'article" class="photo border">
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mt-2 description overflow-x-hidden text-wrap">
+                                <p><?= $article['a_description'] ?></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-2">
+                                <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <?php } ?>
             </div>
         </div>
         <?php } else { ?>

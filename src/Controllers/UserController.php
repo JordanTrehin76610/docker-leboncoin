@@ -119,6 +119,9 @@ class UserController
 
             $Fav = new Annonce();
             $Fav->findAll();
+
+            $achat = new Annonce();
+            $achat->achatHistoric($id);
         } catch (PDOException $e) {
             // die("❌ Erreur SQL : " . $e->getMessage());
         }

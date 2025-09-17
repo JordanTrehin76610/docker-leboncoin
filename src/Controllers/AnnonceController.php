@@ -15,12 +15,22 @@ class AnnonceController
         $touteAnnonces = new Annonce();
         $touteAnnonces->findAll();
 
-        //Appelle la fonction isFavorite pour chaque annonce et ajoute le résultat dans l'array is_favorite
-        foreach ($_SESSION['annonce'] as &$annonce) {
-            $annonceId = $annonce['a_id'];
-            $annonce['is_favorite'] = $touteAnnonces->isFavorite($annonceId);
-        }
         require_once __DIR__ . '/../views/annonces.php';   // On envoie ça à une vue
+    }
+
+    public function search(): void {
+        if(!isset($_SESSION['username'])) 
+        { 
+            session_start(); 
+        }
+        if (empty($_POST['search'])) {
+            header('Location: index.php?url=annonces');
+            exit;
+        } 
+        $touteAnnonces = new Annonce();
+        $touteAnnonces->search($_POST['search']);
+
+        require_once __DIR__ . '/../views/search.php';   // On envoie ça à une vue
     }
 
 
@@ -123,6 +133,23 @@ class AnnonceController
         $fav->findAll();
         header("Location: index.php?url=profil/".$_SESSION['id']);
         exit;
+    }
+
+
+    public function achat(int $idArticle, float $prixArticle) {
+        if(!isset($_SESSION['username'])) 
+        { 
+            session_start(); 
+        } 
+        $achat = new Annonce();
+        $result = $achat->achat($idArticle, $_SESSION['id'], $prixArticle);
+        if ($result === true) {
+            header("Location: index.php?url=profil/".$_SESSION['id']);
+            exit;
+        } else if (is_array($result)) {
+            $errors = $result;
+        }
+        require_once __DIR__ . '/../views/annonces.php';   // On envoie ça à une vue
     }
 }
 ?>

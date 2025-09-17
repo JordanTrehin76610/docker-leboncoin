@@ -191,6 +191,24 @@ switch ($url[0]) {
         }
         break;
 
+    case "achat":
+        session_start();
+        if (!isset($_SESSION['username'])) { //Disponible que si connecté
+            $controller = new HomeController();
+            $controller->page404();
+        } else {
+            $idArticle = $url[1]; // Récupère l'id dans l'url s'il y en a un
+            $prixArticle = $url[2]; // Récupère le prix dans l'url s'il y en a un
+            $controller = new AnnonceController();
+            $controller->achat($idArticle, $prixArticle);
+        }
+        break;
+
+    case "search":
+        $controller = new AnnonceController();
+        $controller->search();
+        break;
+
 }
 
 ?>
