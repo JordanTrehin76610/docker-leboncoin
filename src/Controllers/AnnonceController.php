@@ -111,5 +111,18 @@ class AnnonceController
         header("Location: index.php?url=annonces");
         exit;
     }
+
+
+    public function removeFavProfil(int $idArticle) {
+        if(!isset($_SESSION['username'])) 
+        { 
+            session_start(); 
+        } 
+        $fav = new Annonce();
+        $fav->deleteFavorite($_SESSION['id'], $idArticle);
+        $fav->findAll();
+        header("Location: index.php?url=profil/".$_SESSION['id']);
+        exit;
+    }
 }
 ?>

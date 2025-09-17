@@ -179,6 +179,18 @@ switch ($url[0]) {
         }
         break;
 
+    case "removeFavProfil":
+        session_start();
+        if (!isset($_SESSION['username'])) { //Disponible que si connecté
+            $controller = new HomeController();
+            $controller->page404();
+        } else {
+            $idArticle = $url[1]; // Récupère l'id dans l'url s'il y en a un, sinon 0
+            $controller = new AnnonceController();
+            $controller->removeFavProfil($idArticle);
+        }
+        break;
+
 }
 
 ?>

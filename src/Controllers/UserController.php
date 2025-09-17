@@ -3,6 +3,7 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Models\Database;
+use App\Models\Annonce;
 use PDO;
 use PDOException;
 
@@ -116,6 +117,8 @@ class UserController
             $_SESSION['email'] = $user['u_email'];
             $_SESSION['monney'] = $user['u_monney'];
 
+            $Fav = new Annonce();
+            $Fav->findAll();
         } catch (PDOException $e) {
             // die("❌ Erreur SQL : " . $e->getMessage());
         }

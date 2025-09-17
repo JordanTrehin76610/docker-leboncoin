@@ -102,6 +102,10 @@ class Annonce
             $stmt->execute();
             $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $_SESSION['annonce'] = $annonce;
+            foreach ($_SESSION['annonce'] as &$annonce) {
+                $annonceId = $annonce['a_id'];
+                $annonce['is_favorite'] = $this->isFavorite($annonceId);
+            }
         } catch (PDOException $e) {
             die("❌ Erreur SQL : " . $e->getMessage());
         }
@@ -315,7 +319,7 @@ class Annonce
 
         try {
             //Requete
-            $stmt = $pdo->prepare("DELETE FROM FAVORIS WHERE u_id = :userId AND a_id = :annonceId");
+            $stmt = $pdo->prepare("DELETE FROM FAVORIS WHERE u_id = :userId AND a_id = :annonceId"); 
             // Exécution avec les valeurs
             $stmt->execute([
                 ':userId' => $userId,
