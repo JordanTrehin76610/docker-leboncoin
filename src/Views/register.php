@@ -27,7 +27,7 @@
                     <div class="mb-3 text-start">
                         <label for="exampleFormControlInput1" class="form-label">Email</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $errors["email"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["email"] ?? '' ?></span>
                         <input type="text" class="form-control" id="email" name="email"
                             placeholder="Exemple: TheoduleLabit@email.com"
                             value="<?= htmlspecialchars($_POST["email"] ?? "") ?>">
@@ -37,7 +37,7 @@
                     <div class="mb-3 text-start">
                         <label for="exampleFormControlInput1" class="form-label">Pseudo</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $errors["pseudo"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["pseudo"] ?? '' ?></span>
                         <input type="text" class="form-control" id="pseudo" name="pseudo"
                             placeholder="Exemple: TheoduleLabit@email.com"
                             value="<?= htmlspecialchars($_POST["pseudo"] ?? "") ?>">
@@ -49,7 +49,7 @@
                     <div class="mb-3 text-start">
                         <label for="exampleFormControlInput1" class="form-label">Mot de passe</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $errors["mdp"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["mdp"] ?? '' ?></span>
                         <input type="password" class="form-control" id="mdp" name="mdp"
                             placeholder="Exemple: TheoduleLabit@email.com"
                             value="<?= htmlspecialchars($_POST["mdp"] ?? "") ?>">
@@ -60,7 +60,7 @@
                         <label for="exampleFormControlInput1" class="form-label">Confirmer votre mot de
                             passe</label><span
                             style="color: red !important; display: inline; float: none;">*</span><span
-                            class="ms-2 text-danger fst-italic fw-light"><?= $errors["mdpVerif"] ?? '' ?></span>
+                            class="ms-2 text-danger fst-italic fw-light"><?= $erreur["mdpVerif"] ?? '' ?></span>
                         <input type="password" class="form-control" id="mdpVerif" name="mdpVerif"
                             placeholder="Exemple: TheoduleLabit@email.com"
                             value="<?= htmlspecialchars($_POST["mdpVerif"] ?? "") ?>">

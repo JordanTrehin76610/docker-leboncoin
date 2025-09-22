@@ -59,7 +59,7 @@
                             style="color: red !important; display: inline; float: none;">*</span><span
                             class="ms-2 text-danger fst-italic fw-light"><?= $_SESSION['erreur']["description"] ?? '' ?></span>
                         <textarea type="text" class="form-control pb-3" id="description" name="description"
-                            placeholder="Ecrivez votre message ici"><?= (isset($_POST['description'])) ? $_POST['description'] : ''; ?></textarea>
+                            placeholder="Ecrivez votre message ici"><?= $_POST['description'] ?? ''; ?></textarea>
                     </div>
                 </div>
 
