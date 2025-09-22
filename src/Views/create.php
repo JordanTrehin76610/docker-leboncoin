@@ -11,7 +11,7 @@
 </head>
 
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
 <?php include_once 'templates/navbar.php'; ?>
 
@@ -67,9 +67,12 @@
                     <a href="" class="btn bouton"><button class="boutton" type="submit">Publier votre
                             annonce</button></a>
                 </div>
+            </div>
 
         </form>
     </div>
+
+    <?php include_once 'templates/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">

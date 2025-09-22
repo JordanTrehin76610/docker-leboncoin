@@ -21,10 +21,10 @@ class UserController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = new User();
             $result = $user->createUser(
-                $_POST['pseudo'] ?? '',
-                $_POST['email'] ?? '',
-                $_POST['mdp'] ?? '',
-                $_POST['mdpVerif'] ?? ''
+                htmlspecialchars($_POST['pseudo'] ?? ''),
+                htmlspecialchars($_POST['email'] ?? ''),
+                htmlspecialchars($_POST['mdp'] ?? ''),
+                htmlspecialchars($_POST['mdpVerif'] ?? '')
             );
             if ($result === true) {
                 header('Location: index.php?url=login');
@@ -131,7 +131,7 @@ class UserController
         // Récupère les annonces de l'utilisateur
         try {
             $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
-            $stmt = $pdo->prepare("SELECT a_title, a_picture, a_description, a_price, annonces.u_id, a_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE annonces.u_id = :id");
+            $stmt = $pdo->prepare("SELECT a_title, a_picture, a_description, a_price, annonces.u_id, a_id, a_statut FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE annonces.u_id = :id");
             $stmt->execute(['id' => $id]);
             $annonces = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $_SESSION['annonces'] = $annonces;

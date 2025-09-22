@@ -8,7 +8,7 @@ use PDOException;
 class Annonce
 {
 
-    public function createAnnonce(string $titre, string $description, float $prix, ?array $photo, int $userId): bool {
+    public function createAnnonce(string $titre, string $description, float $prix, ?array $photo, int $userId, string $statut): bool {
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
         $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex
@@ -67,14 +67,15 @@ class Annonce
                 move_uploaded_file($tmpName, __DIR__ . '/../../public/uploads/'.$userId.'_'.$today.'_'.$name); //Enregistre le fichier photo
                 try {
                 //Requete
-                $stmt = $pdo->prepare("INSERT INTO annonces (a_title, a_description, a_price, a_picture, u_id) VALUES (:titre, :descriptions, :prix, :photo, :utilisateur)"); 
+                $stmt = $pdo->prepare("INSERT INTO annonces (a_title, a_description, a_price, a_picture, u_id, a_statut) VALUES (:titre, :descriptions, :prix, :photo, :utilisateur, :statut)"); 
                 // Exécution avec les valeurs
                 $stmt->execute([
                     ':titre' => $titre,
                     ':descriptions' => $description,
                     ':prix' => $prix,
                     ':photo' => $chemin,
-                    ':utilisateur' => $userId
+                    ':utilisateur' => $userId,
+                    ':statut' => $statut
                 ]);
                 header("Location: index.php?url=profil");
                 exit;
@@ -421,7 +422,11 @@ class Annonce
                 ':total' => $total,
                 ':userId' => $userId
             ]);
-            return true;    
+
+            $stmt4 = $pdo->prepare("UPDATE annonces SET a_statut = 'vendu' WHERE a_id = :annonceId");
+            $stmt4->execute([':annonceId' => $annonceId]);
+            return true;
+            
         } catch (PDOException $e) {
             return false;
         }

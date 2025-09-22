@@ -40,7 +40,7 @@ class AnnonceController
             session_start(); 
         } 
         $annonce = new Annonce();
-        $annonce->createAnnonce($_POST['titre'] ?? '', $_POST['description'] ?? '', floatval($_POST['prix'] ?? 0), $_FILES['photo'] ?? null, $_SESSION['id'] ?? 0);
+        $annonce->createAnnonce(htmlspecialchars($_POST['titre'] ?? ''), htmlspecialchars($_POST['description'] ?? ''), floatval($_POST['prix'] ?? 0), $_FILES['photo'] ?? null, $_SESSION['id'] ?? 0, 'A vendre');
         require_once __DIR__ . '/../views/create.php';   // On envoie ça à une vue
     }
 

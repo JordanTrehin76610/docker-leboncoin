@@ -106,15 +106,17 @@ switch ($url[0]) {
 
     case "delete":
 
+        session_start();
+
         $id = $url[1] ?? 0; // Récupère l'id dans l'url s'il y en a un, sinon 0
 
         $pdo = Database::getConnection(); //On se connecte à la base de données
-        $sql = "SELECT * FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
+        $sql = "SELECT a_id, u_id FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
-        $exists = $stmt->fetchColumn(); //On remplie la variable $exists avec le résultat de la requête
+        $exists = $stmt->fetch(); //On remplie la variable $exists avec le résultat de la requête
 
-        if ($exists) { //Si le résultat n'est pas vide alors go
+        if ($exists && ($_SESSION['id'] == $exists['u_id'])) { //Si le résultat n'est pas vide alors go
             $controller = new AnnonceController();
             $controller->delete($id);
         } else {
@@ -130,12 +132,12 @@ switch ($url[0]) {
         $id = $url[1]; // Récupère l'id dans l'url s'il y en a un, sinon 0
 
         $pdo = Database::getConnection(); //On se connecte à la base de données
-        $sql = "SELECT * FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
+        $sql = "SELECT a_id, u_id FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
-        $exists = $stmt->fetchColumn(); //On remplie la variable $exists avec le résultat de la requête
+        $exists = $stmt->fetch(); //On remplie la variable $exists avec le résultat de la requête
 
-        if ($exists) { //Si le résultat n'est pas vide alors go
+        if ($exists && ($_SESSION['id'] == $exists['u_id'])) { //Si le résultat n'est pas vide alors go
             $controller = new AnnonceController();
             $controller->edit($id);
         } else {
