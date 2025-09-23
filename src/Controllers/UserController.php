@@ -16,6 +16,7 @@ class UserController
         session_start();
         session_unset();
         session_destroy();
+        session_start();
         $erreur = [];
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
@@ -83,6 +84,7 @@ class UserController
 
         // Si pas d'erreur, on crée l'utilisateur
         if(empty($erreur)){
+            $_SESSION['registerEtat'] = " "; //On affiche l'alert de succès
             $user = new User();
             $result = $user->createUser(
                 htmlspecialchars($pseudo ?? ''),
@@ -91,6 +93,7 @@ class UserController
                 htmlspecialchars($mdpVerif ?? '')
             );
             if ($result === true) {
+                $_SESSION['registerEtat'] = " "; //On affiche l'alert de succès
                 header('Location: index.php?url=login');
                 exit;
             } elseif (is_array($result)) {
@@ -173,6 +176,8 @@ class UserController
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
         $exists = $stmt->fetchColumn(); //On remplie la variable $exists avec le résultat de la requête
+
+        $_SESSION['registerEtat'] = "visually-hidden"; //On affiche l'alert de succès
 
         if (!$exists) { //Si le résultat est vide alors on l'envoie vers l'erreur 404
             $controller = new HomeController();

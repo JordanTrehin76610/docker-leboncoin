@@ -8,7 +8,8 @@ class HomeController
         if(!isset($_SESSION['username'])) 
         { 
             session_start(); 
-        }  
+        }
+        $_SESSION['registerEtat'] = "visually-hidden"; //On affiche l'alert de succès
         require_once __DIR__ . '/../Views/home.php';   // On envoie ça à une vue
     }
 

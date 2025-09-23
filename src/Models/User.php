@@ -10,6 +10,7 @@ class User
     public function createUser(string $pseudo, string $email, string $mdpVerif) {
         $_SESSION['annonceEtat'] = "visually-hidden";
         $_SESSION['annonceCreation'] = "visually-hidden";
+        $_SESSION['registerEtat'] = " "; //On affiche l'alert de succès
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 

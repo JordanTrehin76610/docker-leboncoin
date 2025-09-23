@@ -15,6 +15,7 @@ class AnnonceController
         { 
             session_start(); 
         } 
+        $_SESSION['registerEtat'] = "visually-hidden"; //On affiche l'alert de succès
         $touteAnnonces = new Annonce();
         $touteAnnonces->findAll();
 
@@ -29,7 +30,8 @@ class AnnonceController
         if (empty($_POST['search'])) {
             header('Location: index.php?url=annonces');
             exit;
-        } 
+        }
+        $_SESSION['registerEtat'] = "visually-hidden"; //On affiche l'alert de succès
         $touteAnnonces = new Annonce();
         $touteAnnonces->search($_POST['search']);
 
@@ -49,6 +51,7 @@ class AnnonceController
         $_SESSION['erreur'] = [];
         $erreur = [];
         $_SESSION['achatEtat'] = "visually-hidden";
+        $_SESSION['registerEtat'] = "visually-hidden"; //On affiche l'alert de succès
 
         $photo = $_FILES['photo'] ?? null;
         $titre = $_POST['titre'] ?? '';

@@ -17,6 +17,10 @@
 
     <hr>
 
+    <div class="w-75 mx-auto mt-5 alert alert-primary <?= $_SESSION['registerEtat'] ?? 'visually-hidden' ?>" role="alert">
+        Votre compte a bien été créé, vous pouvez maintenant vous connecter !
+    </div>
+
     <div class="w-75 mx-auto mt-5">
         <h1>Connexion</h1>
         <form method="post" action="" novalidate>
