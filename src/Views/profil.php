@@ -324,7 +324,11 @@
         <p class="fs-3">Aucune annonce</p>
         <?php } ?>
 
-    </div>
+        <form action="index.php?url=annihilation" method="post">
+            <div class="text-center">
+                <a href="index.php?url=create" class="btn bouton"><button class="boutton" type="submit">SUPPRIMER LE PROFIL</button></a>
+            </div>
+        </form>
 
     <?php include_once 'templates/footer.php'; ?>
 

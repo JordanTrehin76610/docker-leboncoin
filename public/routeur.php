@@ -129,11 +129,23 @@ switch ($url[0]) {
         $controller = new AnnonceController();
         $controller->search();
         break;
+
     case "page404":
         $controller = new HomeController();
         $controller->page404();
         break;
 
+    case "annihilation":
+        session_start();
+        $controller = new UserController();
+        $controller->annihilation();
+        break;
+
+    case "annihilationConfirm":
+        session_start();
+        $controller = new UserController();
+        $controller->annihilationConfirm($_SESSION['id']);
+        break;
 }
 
 ?>

@@ -290,6 +290,24 @@ class UserController
             include_once __DIR__ . '/../views/profil.php';   // On envoie ça à une vue
         }
     }
-}
 
+
+    public function annihilation() {
+        if (!isset($_SESSION['username'])) { //Disponible que si connecté
+            header('Location: index.php?url=page404');
+            return;
+        }
+        include_once __DIR__ . '/../views/annihilation.php';   // On envoie ça à une vue
+    }
+
+    public function annihilationConfirm($id): void {
+        if (!isset($_SESSION['username'])) { //Disponible que si connecté
+            header('Location: index.php?url=page404');
+            return;
+        } else {
+            $deleteUser = new User();
+            $deleteUser->annihilation($id);
+        }
+    }
+}
 ?>

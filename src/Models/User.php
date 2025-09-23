@@ -83,6 +83,31 @@ class User
             return false;
         }
     }
+
+    public function annihilation(int $id) {
+
+        $pdo = Database::getConnection();
+        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceCreation'] = "visually-hidden";
+
+        try {
+            session_unset();
+            session_destroy();
+
+            // POUR SUPPRIMER UN PROFIL FAUT D'ABBORD SUPPRIMER TOUTES SES ANNONCES
+            $sql = "DELETE FROM annonces WHERE u_id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['id' => $id]);
+
+            // ET PUIS BAM
+            $sql2 = "DELETE FROM users WHERE u_id = :id";
+            $stmt2 = $pdo->prepare($sql2);
+            $stmt2->execute(['id' => $id]);
+            header("Location: index.php?url=home");
+        } catch (PDOException $e) {
+            header("Location: index.php?url=page404");
+        }
+    }
 }
 
 ?>

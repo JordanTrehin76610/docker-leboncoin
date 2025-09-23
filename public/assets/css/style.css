@@ -9,6 +9,17 @@
     font-size: 1.5rem;
 }
 
+.bouttonSupp {
+    background-color: #ec1313;
+    border: 0;
+    color: white;
+    border-radius: 10px;
+    padding: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-size: 1.5rem;
+}
+
 .icone {
     font-size: 1.35rem;
 }
@@ -60,6 +71,17 @@
         padding-left: 1rem;
         padding-right: 1rem;
         font-size: 0.8rem;
+    }
+
+    .bouttonSupp {
+        background-color: #ec1313;
+        border: 0;
+        color: white;
+        border-radius: 10px;
+        padding: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-size: 1.5rem;
     }
 
     .textFooter {
