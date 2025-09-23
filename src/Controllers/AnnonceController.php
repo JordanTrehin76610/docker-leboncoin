@@ -124,10 +124,6 @@ class AnnonceController
 
 
     public function show(?int $id): void {
-        if(!isset($_SESSION['username'])) 
-        { 
-            session_start(); 
-        } 
 
         $pdo = Database::getConnection(); //On se connecte à la base de données
         $sql = "SELECT * FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
@@ -175,17 +171,21 @@ class AnnonceController
 
     public function edit(?int $id): void {
         $_SESSION['erreur'] = [];
+        
         if(!isset($_SESSION['username'])) 
         { 
             session_start(); 
-        } 
+        }
 
-        $pdo = Database::getConnection(); //On se connecte à la base de données
-        $sql = "SELECT a_id, u_id FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute(['id' => $id]);
-        $exists = $stmt->fetch(); //On remplie la variable $exists avec le résultat de la requête
-
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                
+            $pdo = Database::getConnection(); //On se connecte à la base de données
+            $sql = "SELECT a_id, u_id FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['id' => $id]);
+            $exists = $stmt->fetch(); //On remplie la variable $exists avec le résultat de la requête
+            
         if(!$exists || ($_SESSION['id'] != $exists['u_id'])) { //Si le résultat est vide ou que l'utilisateur n'est pas le bon alors on l'envoie vers l'erreur 404
             header("Location: index.php?url=page404");
             exit;        
@@ -210,7 +210,7 @@ class AnnonceController
             } else {
                 $edit->editAnnonce($id, 30, '');
             }
-        }
+        }}
         require_once __DIR__ . '/../views/edit.php';   // On envoie ça à une vue
     }
 

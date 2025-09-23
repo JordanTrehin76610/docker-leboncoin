@@ -60,7 +60,7 @@ if (!empty($url[2])) {
                 </div>
                 <div class="col text-start ps-5">
                     <div class="row">
-                        <h2><?= htmlspecialchars($_SESSION['annonce']['a_title']) ?><span
+                        <h2><?= $_SESSION['annonce']['a_title'] ?><span
                                 class="ms-2 text-danger fst-italic fw-light fs-5"><?= $_SESSION['erreur']["titre"] ?? '' ?></span><button
                                 class="btn bouton-danger ms-5" type="submit"
                                 onclick="location.href='index.php?url=edit/<?= $_SESSION['annonce']['a_id'] ?>/1'"><i
@@ -77,10 +77,10 @@ if (!empty($url[2])) {
                     </form>
                     <?php } ?>
                     <div class="row">
-                        <h4>Par <?= htmlspecialchars($_SESSION['annonce']['u_username']) ?></h4>
+                        <h4>Par <?= $_SESSION['annonce']['u_username'] ?></h4>
                     </div>
                     <div class="row">
-                        <p><?= htmlspecialchars($_SESSION['annonce']['a_description']) ?><button
+                        <p><?= $_SESSION['annonce']['a_description'] ?><button
                                 class="btn bouton-danger ms-5" type="submit"
                                 onclick="location.href='index.php?url=edit/<?= $_SESSION['annonce']['a_id'] ?>/2'"><i
                                     class="bi bi-pencil-fill"></i></button>
@@ -105,7 +105,7 @@ if (!empty($url[2])) {
                                 class="btn bouton-danger ms-5" type="submit"
                                 onclick="location.href='index.php?url=edit/<?= $_SESSION['annonce']['a_id'] ?>/3'"><i
                                     class="bi bi-pencil-fill"></i></button><span
-                                class="ms-5 text-danger fst-italic fw-light fs-5"><?= $_SESSION['erreur']["prix"] ?? '' ?></span>
+                                class="ms-5 text-danger fst-italic fw-light fs-5"><?= $_SESSION['erreur']["prix"] ?? ' ' ?></span>
                         </p>
                     </div>
                     <?php if ($edit == 3) { ?>

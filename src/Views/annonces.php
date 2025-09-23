@@ -72,12 +72,11 @@
                                         class="bi bi-bag-fill"></i></button>
                             </form>
                         </div>
-                        <?php } }?>
-                        <div class="col-lg-8 col-7 mb-2 ms-4">
+                        <?php }?>
+                        <div class="col-lg-8 col-7 mb-2 ms-5">
                             <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
                         </div>
                         <div class="col-1">
-                            <?php if (isset($_SESSION['id'])) { ?>
                             <?php if($article['is_favorite'] == true) { ?>
                             <form action="index.php?url=removeFav/<?= $article['a_id'] ?>" method="post">
                                 <button type="submit" class="btn btn-warning text-white"><i
@@ -88,8 +87,8 @@
                                 <button type="submit" class="btn btn-warning text-white"><i
                                         class="bi bi-star"></i></button>
                             </form>
-                            <?php } }?>
                         </div>
+                        <?php } }?>
                     </div>
                 </div>
                 <?php }} ?>

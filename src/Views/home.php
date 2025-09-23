@@ -16,24 +16,67 @@
 
     <?php include_once 'templates/navbar.php'; ?>
 
-
     <hr>
 
     <div class="text-center">
-        <h1 class="my-5">Accueil</h1>
-        <a href="index.php?url=annonces" class="btn bouton"><button class="boutton" type="submit">Voir toutes les
-                annonces</button></a>
 
-        <hr class="my-5 w-75 mx-auto">
-
-        <h2 class="my-5">Rechercher une annonce</h2>
+        <h1 class="my-3 mb-5">Rechercher une annonce</h1>
         <form action="index.php?url=search" method="POST" class="">
             <div class="container">
                 <div class="row"><input type="text" name="search" placeholder="Rechercher une annonce"
                         class="border rounded mb-2 widthSearchBar mx-auto py-1"></div>
-                <div class="row w-50 mx-auto mt-2"><button class="boutton widthSearch mx-auto" type="submit">Rechercher</button></div>
+                <div class="row w-50 mx-auto mt-3"><button class="boutton widthSearch mx-auto"
+                        type="submit">Rechercher</button></div>
             </div>
         </form>
+        <a href="index.php?url=annonces" class="btn bouton"><button class="boutton" type="submit">Voir toutes les
+                annonces</button></a>
+
+        <hr class="my-3 w-75 mx-auto">
+
+        <h2 class="my-2 mb-4">Les dernières annonces</h2>
+
+        <?php if (!empty($_SESSION['annonce'])) { ?>
+        <div class="container text-center mb-5">
+            <div class="row">
+                <?php $i = 0;
+                foreach ($_SESSION['annonce'] as $article) { ?>
+                <div class="col-lg-4 border">
+                    <?php $url = "index.php?url=details/". $article['a_id']?>
+                    <a href='<?= $url ?>' class="text-decoration-none text-dark col-4">
+                        <div class="row">
+                            <div class="col text-start overflow-x-hidden text-nowrap">
+                                <p><?= htmlspecialchars($article['a_title']) ?></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col cadre">
+                                <?php if (is_file($article['a_picture'])){ ?>
+                                <img src="<?= $article['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                                <?php } else { ?>
+                                <img src="uploads/default.png" alt="Photo de l'article" class="photo border">
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mt-2 description overflow-x-hidden text-wrap">
+                                <p><?= $article['a_description'] ?></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-2">
+                                <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <?php $i++; ?>
+                <?php if ($i == 3) break; } ?>
+            </div>
+        </div>
+        <?php } else { ?>
+        <p class="fs-3">Aucune annonce</p>
+        <?php } ?>
 
     </div>
 

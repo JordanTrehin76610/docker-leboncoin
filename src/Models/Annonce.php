@@ -79,6 +79,56 @@ class Annonce
         return $_SESSION['annonce'];
     }
 
+    
+    public function findLast(): array {
+
+        $pdo = Database::getConnection();
+        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceCreation'] = "visually-hidden";
+        $_SESSION['achatEtat'] = "visually-hidden";
+
+        try {
+            $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN users ON annonces.u_id = users.u_id ORDER BY a_id DESC");
+            $stmt->execute();
+            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $_SESSION['annonce'] = $annonce;
+
+            //Pour virer les articles acheté de la liste principale
+            $achat = $this->achatAll(); //On appelle la fonction pour avoir tous les achats
+            foreach ($_SESSION['annonce'] as &$annonce) {
+                if (isset($achat) && !empty($achat)) {
+                    foreach ($achat as $achatId) {
+                        if ($annonce['a_id'] == $achatId['a_id']) { //On compare les id des annonces avec les id des achats
+                            $annonce['is_achete'] = true;
+                            break; // Si l'annonce a été achetée, on sort de la boucle interne
+                        } else {
+                            $annonce['is_achete'] = false;
+                        }
+                    }
+                } else {
+                    $annonce['is_achete'] = false;
+                }
+            }
+
+            if (isset($_SESSION['id'])) {
+                foreach ($_SESSION['annonce'] as &$annonce) { // Pour chaque annonce, on check si elle est en favoris
+                    $annonceId = $annonce['a_id'];
+                    $annonce['is_favorite'] = $this->isFavorite($annonceId);
+                }
+            }
+
+            foreach ($_SESSION['annonce'] as $index => $annonce) {
+                if ($annonce['is_achete'] == true) {
+                    unset($_SESSION['annonce'][$index]);
+                }
+            }
+
+        } catch (PDOException $e) {
+            die("❌ Erreur SQL : " . $e->getMessage());
+        }
+        return $_SESSION['annonce'];
+    }
+
 
     public function search($search): array {
 
@@ -176,10 +226,10 @@ class Annonce
     public function editAnnonce(int $id, int $action, string $modif) {
 
         $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex
-        $_SESSION['erreur'] = [];
         $_SESSION['annonceEtat'] = "visually-hidden";
         $_SESSION['annonceCreation'] = "visually-hidden";
         $_SESSION['achatEtat'] = "visually-hidden";
+        $_SESSION['erreur'] = [];
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
@@ -192,104 +242,110 @@ class Annonce
             die("❌ Erreur SQL : " . $e->getMessage());
         }
 
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            switch ($action) {
+                case 10:
+                    if(isset($_POST['titre'])) {
+                        if(empty($_POST['titre'])) {
+                            $_SESSION['erreur']['titre'] = "Veuillez inscrire un titre";
+                        } else if (strlen($_POST['titre']) > 255) { //strlen regarde la longueur d'une chaîne
+                            $_SESSION['erreur']['titre'] = "Titre trop long";
+                        } else {
+                            try {
+                                $stmt = $pdo->prepare("UPDATE annonces SET a_title = :titre WHERE a_id = :id");
+                                $stmt->execute([
+                                    ':titre' => $modif,
+                                    ':id' => $id
+                                ]);
+                                $_SESSION['erreur'] = [];
+                                header("Location: index.php?url=details/".$id);
+                                exit;
+                                return $_SESSION['annonce'];   
+                            } catch (PDOException $e) {
+                                return $_SESSION['annonce'];   
+                            }
+                        }
+                    }
+                    break;
+                case 20:
+                    if(isset($_POST['description'])) {
+                        if(empty($_POST['description'])) {
+                            $_SESSION['erreur']['description'] = "Veuillez inscrire une description";
+                        } else if (strlen($_POST['description']) > 100) { 
+                            $_SESSION['erreur']['description'] = "Description trop longue";
+                        } else {
+                            try {
+                                $stmt = $pdo->prepare("UPDATE annonces SET a_description = :description WHERE a_id = :id");
+                                $stmt->execute([
+                                    ':description' => $modif,
+                                    ':id' => $id
+                                ]);
+                                $_SESSION['erreur'] = [];
+                                header("Location: index.php?url=details/".$id);
+                                exit;
+                                return $_SESSION['annonce'];
+                            } catch (PDOException $e) {
+                                return $_SESSION['annonce'];   
+                            }
+                        }
+                    }
+                    break;
+                case 30:
+                    if(isset($_POST['prix'])) {
+                        if(empty($_POST['prix'])) {
+                            $_SESSION['erreur']['prix'] = "Veuillez inscrire un prix";
+                        } else if (!preg_match($regexPrix, $_POST['prix'])) {
+                            $_SESSION['erreur']['prix'] = "Uniquement deux chiffres après la virgule";
+                        } else if ($_POST['prix'] < 0) {
+                            $_SESSION['erreur']['prix'] = "Veuillez inscrire un prix supérieur à 0 €";
+                        } else if ($_POST['prix'] > 999999999) {
+                            $_SESSION['erreur']['prix'] = "Prix trop grand";
+                        } else {
+                            try {
+                                $stmt = $pdo->prepare("UPDATE annonces SET a_price = :prix WHERE a_id = :id");
+                                $stmt->execute([
+                                    ':prix' => $modif,
+                                    ':id' => $id
+                                ]);
+                                header("Location: index.php?url=details/".$id);
+                                exit;
+                                return $_SESSION['annonce'];    
+                            } catch (PDOException $e) {
+                                return $_SESSION['annonce'];   
+                            }
+                        }
+                    }
+                    break;
+                case 40:
+                    //On supprime l'ancienne photo
+                    $stmt = $pdo->prepare("SELECT a_picture FROM annonces WHERE annonces.a_id = :id");
+                    $stmt->execute([':id' => $id]);
+                    $annonce = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $picture = $annonce['a_picture'];
+                    if ($picture && is_file($picture) && $picture != 'uploads/default.png') {
+                        unlink($picture); //Supprime le fichier de l'annonce
+                    }
 
-        switch ($action) {
-            case 10:
-                if(empty($_POST['titre'])) {
-                    $_SESSION['erreur']['titre'] = "Veuillez inscrire un titre";
-                } else if (strlen($_POST['titre']) > 255) { //strlen regarde la longueur d'une chaîne
-                    $_SESSION['erreur']['titre'] = "Titre trop long";
-                } else {
+                    //On ajoute la nouvelle photo
+                    $tmpName = $_FILES['photo']['tmp_name'];
+                    $name = $_FILES['photo']['name'];
+                    $today = date("Ymd");  
+                    $chemin = 'uploads/'.$_SESSION['id'].'_'.$today.'_'.$name;
+                    move_uploaded_file($tmpName, __DIR__ . '/../../public/uploads/'.$_SESSION['id'].'_'.$today.'_'.$name); //Enregistre le fichier photo
                     try {
-                        $stmt = $pdo->prepare("UPDATE annonces SET a_title = :titre WHERE a_id = :id");
+                        $stmt = $pdo->prepare("UPDATE annonces SET a_picture = :photo WHERE a_id = :id");
                         $stmt->execute([
-                            ':titre' => $modif,
+                            ':photo' => $chemin,
                             ':id' => $id
                         ]);
-                        header("Location: index.php?url=details/".$id);
-                        exit;
-                        return $_SESSION['annonce'];   
-                    } catch (PDOException $e) {
-                        return $_SESSION['annonce'];   
-                    }
-                }
-                break;
-            case 20:
-                if(empty($_POST['description'])) {
-                    $_SESSION['erreur']['description'] = "Veuillez inscrire une description";
-                } else if (strlen($_POST['description']) > 100) { 
-                    $_SESSION['erreur']['description'] = "Description trop longue";
-                } else {
-                    try {
-                        $stmt = $pdo->prepare("UPDATE annonces SET a_description = :description WHERE a_id = :id");
-                        $stmt->execute([
-                            ':description' => $modif,
-                            ':id' => $id
-                        ]);
-                        header("Location: index.php?url=details/".$id);
-                        exit;
-                        return $_SESSION['annonce'];
-                    } catch (PDOException $e) {
-                        return $_SESSION['annonce'];   
-                    }
-                }
-                break;
-            case 30:
-                if(empty($_POST['prix'])) {
-                    $_SESSION['erreur']['prix'] = "Veuillez inscrire un prix";
-                } else if (!preg_match($regexPrix, $_POST['prix'])) {
-                    $_SESSION['erreur']['prix'] = "Uniquement deux chiffres après la virgule";
-                } else if ($_POST['prix'] < 0) {
-                    $_SESSION['erreur']['prix'] = "Veuillez inscrire un prix supérieur à 0 €";
-                } else if ($_POST['prix'] > 999999999) {
-                    $_SESSION['erreur']['prix'] = "Prix trop grand";
-                } else {
-                    try {
-                        $stmt = $pdo->prepare("UPDATE annonces SET a_price = :prix WHERE a_id = :id");
-                        $stmt->execute([
-                            ':prix' => $modif,
-                            ':id' => $id
-                        ]);
+                        $_SESSION['erreur'] = [];
                         header("Location: index.php?url=details/".$id);
                         exit;
                         return $_SESSION['annonce'];    
                     } catch (PDOException $e) {
                         return $_SESSION['annonce'];   
                     }
-                }
-                break;
-            case 40:
-                //On supprime l'ancienne photo
-                $stmt = $pdo->prepare("SELECT a_picture FROM annonces WHERE annonces.a_id = :id");
-                $stmt->execute([':id' => $id]);
-                $annonce = $stmt->fetch(PDO::FETCH_ASSOC);
-                $picture = $annonce['a_picture'];
-                if ($picture && is_file($picture) && $picture != 'uploads/default.png') {
-                    unlink($picture); //Supprime le fichier de l'annonce
-                }
-
-                //On ajoute la nouvelle photo
-                $tmpName = $_FILES['photo']['tmp_name'];
-                $name = $_FILES['photo']['name'];
-                $today = date("Ymd");  
-                $chemin = 'uploads/'.$_SESSION['id'].'_'.$today.'_'.$name;
-                move_uploaded_file($tmpName, __DIR__ . '/../../public/uploads/'.$_SESSION['id'].'_'.$today.'_'.$name); //Enregistre le fichier photo
-                try {
-                    $stmt = $pdo->prepare("UPDATE annonces SET a_picture = :photo WHERE a_id = :id");
-                    $stmt->execute([
-                        ':photo' => $chemin,
-                        ':id' => $id
-                    ]);
-                    header("Location: index.php?url=details/".$id);
-                    exit;
-                    return $_SESSION['annonce'];    
-                } catch (PDOException $e) {
-                    return $_SESSION['annonce'];   
-                }
-                break;
+                    break;
             }
-        }
         return $_SESSION['annonce'];
     }
 

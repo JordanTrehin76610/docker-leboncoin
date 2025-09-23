@@ -5,7 +5,7 @@
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-end text-start text-lg-center" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse justify-content-end text-start" id="navbarSupportedContent">
          <hr>   
         <?php if(isset($_SESSION['username'])) { ?>
             <div class="col-2">
