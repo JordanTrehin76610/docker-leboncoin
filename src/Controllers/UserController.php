@@ -244,17 +244,24 @@ class UserController
                 if(isset($amount)) {
                     if (empty($amount)) {
                         $erreur = true; // Y'a rien
+                        $_SESSION['messageMoney'] = "Veuillez entrer un montant.";
+                        $_POST['moneyError'] = " "; // Sert juste à afficher le message d'erreur
                     } else if (!preg_match($regexPrix, $amount)) {
                         $erreur = true; // Montant avec trop de chiffre après la virgule
+                        $_SESSION['messageMoney'] = "Veuillez entrer un montant valide (maximum 2 décimales).";
+                        $_POST['moneyError'] = " "; // Sert juste à afficher le message d'erreur
                     } else if ($amount < 0) {
                         $erreur = true; // Montant trop faible
+                        $_SESSION['messageMoney'] = "Le montant doit être positif.";
+                        $_POST['moneyError'] = " "; // Sert juste à afficher le message d'erreur
                     } else if ($amount > 999999999) {
                         $erreur = true; // Montant trop élevé
+                        $_SESSION['messageMoney'] = "Le montant est trop élevé.";
+                        $_POST['moneyError'] = " "; // Sert juste à afficher le message d'erreur
                     }
                 }
 
                 if (isset($erreur) && $erreur == true) {
-                    $_SESSION['messageMoney'] = "Erreur lors de l'ajout de fonds. Veuillez réessayer.";
                     include_once __DIR__ . '/../views/profil.php';   // On envoie ça à une vue
                     exit;
                 } else {
@@ -263,6 +270,7 @@ class UserController
 
                     if ($result == false) {
                         $_SESSION['messageMoney'] = "Erreur lors de l'ajout de fonds. Veuillez réessayer.";
+                        $_POST['moneyError'] = " "; // Sert juste à afficher le message d'erreur
                         include_once __DIR__ . '/../views/profil.php';   // On envoie ça à une vue
                     } else {
                         $_SESSION['messageMoney'] = "Fonds ajoutés avec succès !";

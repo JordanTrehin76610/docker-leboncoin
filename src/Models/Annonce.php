@@ -9,6 +9,9 @@ class Annonce
 {
 
     public function createAnnonce(string $titre, string $description, float $prix, ?string $chemin, int $userId, string $statut): bool {
+        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['achatEtat'] = "visually-hidden";
+        $_SESSION['annonceCreation'] = " ";
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard        
         try {
             //Requete
@@ -80,6 +83,10 @@ class Annonce
     public function search($search): array {
 
         $pdo = Database::getConnection();
+        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceCreation'] = "visually-hidden";
+        $_SESSION['achatEtat'] = "visually-hidden";
+
         try {
             $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE a_title LIKE :search OR u_username LIKE :search");
             $stmt->execute(['search' => "%$search%"]);
@@ -123,6 +130,9 @@ class Annonce
     public function findById(int $id): ?array {
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceCreation'] = "visually-hidden";
+        $_SESSION['achatEtat'] = "visually-hidden";
 
         try {
             $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.a_id, u_username, annonces.u_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE annonces.a_id = :id");
@@ -153,6 +163,9 @@ class Annonce
             $sql = "DELETE FROM annonces WHERE a_id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['id' => $id]);
+            $_SESSION['annonceEtat'] = " ";
+            $_SESSION['annonceCreation'] = "visually-hidden";
+            $_SESSION['achatEtat'] = "visually-hidden";
             return true;
         } catch (PDOException $e) {
             return false;
@@ -164,6 +177,9 @@ class Annonce
 
         $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex
         $_SESSION['erreur'] = [];
+        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceCreation'] = "visually-hidden";
+        $_SESSION['achatEtat'] = "visually-hidden";
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
@@ -365,6 +381,7 @@ class Annonce
 
             $stmt4 = $pdo->prepare("UPDATE annonces SET a_statut = 'vendu' WHERE a_id = :annonceId");
             $stmt4->execute([':annonceId' => $annonceId]);
+            $_POST['achatEtat'] = " ";
             return true;
 
         } catch (PDOException $e) {

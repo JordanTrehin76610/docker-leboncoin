@@ -18,8 +18,7 @@
 
     <div class="w-75 mx-auto mt-5">
 
-        <h1>Votre profil <p class="fs-3"><?= $_SESSION['messageMoney'] ?? '' ?></p>
-        </h1>
+        <h1>Votre profil</h1>
 
         <div class="container text-center mt-5">
             <div class="row">
@@ -69,6 +68,22 @@
         </div>
 
         <hr>
+
+        <div class="alert alert-primary <?= $_POST['moneyEtat'] ?? 'visually-hidden' ?>" role="alert">
+            Votre solde a bien été mis à jour.
+        </div>
+        <div class="alert alert-danger <?= $_POST['moneyError'] ?? 'visually-hidden' ?>" role="alert">
+            <?= $_SESSION['messageMoney'] ?? '' ?>
+        </div>
+        <div class="alert alert-primary <?= $_SESSION['annonceEtat'] ?? 'visually-hidden' ?>" role="alert">
+            Votre annonce a bien été supprimée.
+        </div>
+        <div class="alert alert-primary <?= $_SESSION['annonceCreation'] ?? 'visually-hidden' ?>" role="alert">
+            Votre annonce a bien été créée.
+        </div>
+        <div class="alert alert-success <?= $_SESSION['achatEtat'] ?? 'visually-hidden' ?>" role="alert">
+            Achat effectué avec succès !
+        </div>
 
         <div class="text-center">
             <a href="index.php?url=create" class="btn bouton"><button class="boutton" type="submit">Créer une
@@ -311,7 +326,7 @@
 
     </div>
 
-<?php include_once 'templates/footer.php'; ?>
+    <?php include_once 'templates/footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">

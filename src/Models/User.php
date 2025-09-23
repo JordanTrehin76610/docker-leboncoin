@@ -8,6 +8,8 @@ use PDOException;
 class User
 {
     public function createUser(string $pseudo, string $email, string $mdpVerif) {
+        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceCreation'] = "visually-hidden";
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
@@ -33,6 +35,8 @@ class User
 
     //VERIFIE SI L'EMAIL EXISTE DANS LA BASE DE DONNEES
     public function findByEmail(string $email): ?array {
+        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceCreation'] = "visually-hidden";
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         $stmt = $pdo->prepare("SELECT u_id, u_username, u_email, u_password, u_inscription, u_monney FROM users WHERE u_email = :email");
@@ -51,6 +55,8 @@ class User
     public function addMoney(int $id, float $amount): bool {
 
         $pdo = Database::getConnection();
+        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceCreation'] = "visually-hidden";
 
         try {
             // Commencer une transaction
@@ -68,6 +74,7 @@ class User
                 'newMonney' => $total,
                 'id' => $id
             ]);
+            $_POST['moneyEtat'] = " ";
             return true;
 
         } catch (PDOException $e) {

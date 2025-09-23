@@ -13,6 +13,7 @@ class HomeController
     }
 
     public function page404(): void {
+        $_SESSION['annonceEtat'] = "visually-hidden";
         require_once __DIR__ . '/../Views/page404.php';   // On envoie ça à une vue
     }
 }

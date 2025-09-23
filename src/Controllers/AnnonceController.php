@@ -48,6 +48,7 @@ class AnnonceController
         $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex
         $_SESSION['erreur'] = [];
         $erreur = [];
+        $_SESSION['achatEtat'] = "visually-hidden";
 
         $photo = $_FILES['photo'] ?? null;
         $titre = $_POST['titre'] ?? '';
@@ -161,6 +162,8 @@ class AnnonceController
         } else {
             $delete = new Annonce();
             $delete->delete($id);
+            $_SESSION['annonceEtat'] = " ";
+            $_SESSION['achatEtat'] = "visually-hidden";
             header("Location: index.php?url=profil/".$_SESSION['id']);
             exit;
         }
@@ -261,6 +264,7 @@ class AnnonceController
             $achat = new Annonce();
             $result = $achat->achat($idArticle, $_SESSION['id'], $prixArticle);
             if ($result === true) {
+                $_SESSION['achatEtat'] = " ";
                 header("Location: index.php?url=profil/".$_SESSION['id']);
                 exit;
             } else if (is_array($result)) {
