@@ -45,8 +45,11 @@
                     <?php $url = "index.php?url=details/". $article['a_id']?>
                     <a href='<?= $url ?>' class="text-decoration-none text-dark col-4">
                         <div class="row">
-                            <div class="col text-start overflow-x-hidden text-nowrap">
-                                <p><?= htmlspecialchars($article['a_title']) ?></p>
+                            <div class="col-7 text-start overflow-x-hidden text-nowrap ">
+                                <p><?= $article['a_title'] ?></p>
+                            </div>
+                            <div class="col-5 text-end overflow-x-hidden text-wrap">
+                                <p><?= $article['u_username'] ?></p>
                             </div>
                         </div>
                         <div class="row">
@@ -82,9 +85,7 @@
 
     <?php include_once 'templates/footer.php'; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 
 

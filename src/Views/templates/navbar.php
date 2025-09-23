@@ -6,8 +6,8 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end text-start" id="navbarSupportedContent">
-         <hr>   
-        <?php if(isset($_SESSION['username'])) { ?>
+            <hr>
+            <?php if(isset($_SESSION['username'])) { ?>
             <div class="col-2">
                 <div class="row">
                     <a href="index.php?url=logout" class="btn bouton"><button class="boutton"
@@ -25,7 +25,7 @@
                 </a>
             </div>
             <div class="col-6 col-lg-1">
-                <div class="row mt-1 ms-lg-2">
+                <div class="row mt-2 pt-1 ms-lg-2">
                     <i class="bi bi-wallet"></i>
                 </div>
                 <div class="row mt-1">
@@ -48,8 +48,8 @@
                         <p class="text-dark text-decoration-none">Se connecter</p>
                     </div>
                 </a>
-                <?php } ?>
             </div>
+            <?php } ?>
         </div>
     </div>
 </nav>
