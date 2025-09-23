@@ -94,15 +94,39 @@ class User
             session_unset();
             session_destroy();
 
-            // POUR SUPPRIMER UN PROFIL FAUT D'ABBORD SUPPRIMER TOUTES SES ANNONCES
-            $sql = "DELETE FROM annonces WHERE u_id = :id";
+            // POUR SUPPRIMER UN PROFIL FAUT D'ABBORD SUPPRIMER TOUTES SES ANNONCES EN FAVORIS ET ACHAT 
+            // PUIS SES ANNONCES PUIS LUI MEME 
+
+            // Suppression des favoris de l'utilisateur
+            $sql = "DELETE FROM FAVORIS WHERE a_id IN (SELECT a_id FROM annonces WHERE u_id = :id)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['id' => $id]);
 
-            // ET PUIS BAM
-            $sql2 = "DELETE FROM users WHERE u_id = :id";
+            $sql2 = "DELETE FROM FAVORIS WHERE u_id = :id";
             $stmt2 = $pdo->prepare($sql2);
             $stmt2->execute(['id' => $id]);
+
+
+            // Suppression des achats de l'utilisateur
+            $sql3 = "DELETE FROM ACHAT WHERE a_id IN (SELECT a_id FROM annonces WHERE u_id = :id)";
+            $stmt3 = $pdo->prepare($sql3);
+            $stmt3->execute(['id' => $id]);
+
+            $sql4 = "DELETE FROM ACHAT WHERE ACHAT.u_id = :id";
+            $stmt4 = $pdo->prepare($sql4);
+            $stmt4->execute(['id' => $id]);
+
+
+            // Suppression des annonces de l'utilisateur
+            $sql5 = "DELETE FROM annonces WHERE u_id = :id";
+            $stmt5 = $pdo->prepare($sql5);
+            $stmt5->execute(['id' => $id]);
+
+
+            // Suppression de l'utilisateur
+            $sql6 = "DELETE FROM users WHERE u_id = :id";
+            $stmt6 = $pdo->prepare($sql6);
+            $stmt6->execute(['id' => $id]);
             header("Location: index.php?url=home");
         } catch (PDOException $e) {
             header("Location: index.php?url=page404");
