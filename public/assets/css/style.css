@@ -26,4 +26,71 @@
 .description {
     height: 5rem;
     overflow: auto;
+    overflow-x: hidden;
+}
+
+.textFooter {
+    font-size: 1rem;
+}
+
+.widthSearch {
+    width: 25%;
+}
+
+.widthSearchBar {
+    width: 50%;
+}
+
+.imageDetails {
+    border-right: 1px solid grey;
+}
+
+.prixDetails{
+    width: 25%;
+}
+
+@media (max-width: 800px) {
+
+    .boutton {
+        background-color: #EC5A13;
+        border: 0;
+        color: white;
+        border-radius: 10px;
+        padding: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-size: 0.8rem;
+    }
+
+    .textFooter {
+        font-size: 0.8rem;
+    }
+
+    .widthSearch {
+        width: 75%;
+    }
+
+    .widthSearchBar {
+        width: 75%;
+    }
+
+    .cadre {
+        height: 18rem;
+    }
+
+    .description {
+        height: 7rem;
+        overflow: visible;
+        overflow-x: visible;
+    }
+
+    .imageDetails {
+        border-right: 0px solid grey;
+        border-bottom: 1px solid grey;
+    }
+
+    .prixDetails{
+        width: 50%;
+    }
+
 }

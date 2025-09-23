@@ -18,17 +18,17 @@
 
     <hr>
 
-    <div class="mx-auto w-75 mt-5 mb-5">
+    <div class="mx-auto w-75 mt-5 mb-lg-5 mb-2">
         <div class="container text-center">
             <div class="row">
-                <div class="col border-end">
+                <div class="col-lg imageDetails mb-3">
                     <?php if (is_file($_SESSION['annonce']['a_picture'])){ ?>
-                        <img src="<?= $_SESSION['annonce']['a_picture'] ?>" alt="Photo de l'article" class="photo border">
+                        <img src="<?= $_SESSION['annonce']['a_picture'] ?>" alt="Photo de l'article" class="photo border mb-3">
                     <?php } else { ?>
                         <img src="uploads/default.png" alt="Photo de l'article" class="photo border">
                     <?php } ?>
                 </div>
-                <div class="col text-start ps-5">
+                <div class="col text-start ps-lg-5">
                     <div class="row">
                         <h2><?= htmlspecialchars($_SESSION['annonce']['a_title']) ?></h2>
                     </div>
@@ -38,8 +38,8 @@
                     <div class="row">
                         <p><?= $_SESSION['annonce']['a_description'] ?></p>
                     </div>
-                    <div class="row mt-5">
-                        <p class="badge text-bg-success w-25"><?= $_SESSION['annonce']['a_price'] ?>€</p>
+                    <div class="row mt-lg-5 mt-2">
+                        <p class="badge text-bg-success prixDetails"><?= $_SESSION['annonce']['a_price'] ?>€</p>
                     </div>
                 </div>
             </div>

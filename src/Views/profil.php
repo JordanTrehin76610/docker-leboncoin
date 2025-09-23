@@ -54,7 +54,7 @@
                         <p><?= $_SESSION['monney'] ?> €</p>
                     </div>
                 </div>
-                <div class="col">
+                <div class="col-8 col-lg">
                     <form action="index.php?url=money" method="post" novalidate>
                         <div class="row">
                             <button class="boutton" type="submit">Ajouter
@@ -98,7 +98,7 @@
                 <?php foreach ($_SESSION['annonces'] as $article) { 
                     if ($article['a_statut'] != 'vendu') {
                 ?>
-                <div class="col-4 border">
+                <div class="col-lg-4 border">
                     <?php $url = "index.php?url=details/". $article['a_id']?>
                     <a href='<?= $url ?>' class="text-decoration-none text-dark col-4">
                         <div class="row">
@@ -158,7 +158,7 @@
                 <?php foreach ($_SESSION['annonces'] as $article) { 
                     if ($article['a_statut'] == 'vendu') {
                 ?>
-                <div class="col-4 border">
+                <div class="col-lg-4 border">
                     <?php $url = "index.php?url=details/". $article['a_id']?>
                     <a href='<?= $url ?>' class="text-decoration-none text-dark col-4">
                         <div class="row">
@@ -208,7 +208,7 @@
                         }
                     }
                     if ($article['is_favorite'] == true) {?>
-                <div class="col text-decoration-none text-dark col-4 border">
+                <div class="col text-decoration-none text-dark col-lg-4 border">
                     <?php $url = "index.php?url=details/". $article['a_id']?>
                     <a href='<?= $url ?>' class="text-decoration-none text-dark">
                         <div class="row">
@@ -254,7 +254,7 @@
                             </form>
                         </div>
                         <?php } ?>
-                        <div class="col-8 mb-2 ms-5">
+                        <div class="col-lg-8 col-6 mb-2 ms-5">
                             <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
                         </div>
                         <div class="col-1">
@@ -285,7 +285,7 @@
         <div class="container text-center mb-5">
             <div class="row">
                 <?php foreach ($_SESSION['achat'] as $article) { ?>
-                <div class="col-4 border">
+                <div class="col-lg-4 border">
                     <?php $url = "index.php?url=details/". $article['a_id']?>
                     <a href='<?= $url ?>' class="text-decoration-none text-dark col-4">
                         <div class="row">

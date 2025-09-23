@@ -17,87 +17,91 @@ class UserController
         session_unset();
         session_destroy();
         session_start();
-        $erreur = [];
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
         $nom = "/^[a-z0-9.-]+$/i"; //Regex
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-        $email = $_POST["email"] ?? '';
-        $pseudo = $_POST["pseudo"] ?? '';
-        $password = $_POST["mdp"] ?? '';
-        $mdpVerif = $_POST["mdpVerif"] ?? '';
+            $email = $_POST["email"] ?? '';
+            $pseudo = $_POST["pseudo"] ?? '';
+            $password = $_POST["mdp"] ?? '';
+            $mdpVerif = $_POST["mdpVerif"] ?? '';
 
-        // On test les erreurs
-        if(isset($email)) {
-            if (empty($email)) {
-                $erreur["email"] = "Veuillez inscrire votre email";
-            } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $erreur["email"] = "Mail non valide";
-            } else if (strlen($email) > 50) { //strlen regarde la longueur d'une chaîne
-                $erreur["email"] = "Mail trop long";
+            $erreur = [];
+            // On test les erreurs
+            if(isset($email)) {
+                if (empty($email)) {
+                    $erreur["email"] = "Veuillez inscrire votre email";
+                } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $erreur["email"] = "Mail non valide";
+                } else if (strlen($email) > 50) { //strlen regarde la longueur d'une chaîne
+                    $erreur["email"] = "Mail trop long";
+                }
             }
-        }
 
-        if(isset($pseudo)) {
-            if (empty($pseudo)) {
-                $erreur["pseudo"] = "Veuillez inscrire votre pseudo";
-            } else if (!preg_match($nom, $pseudo)) {
-                $erreur["pseudo"] = "Charactère non valide";
-            } else if (strlen($pseudo) < 4) {
-                $erreur["pseudo"] = "Pseudo trop court";
-            } else if (strlen($pseudo) > 25) {
-                $erreur["pseudo"] = "Pseudo trop long";
+            if(isset($pseudo)) {
+                if (empty($pseudo)) {
+                    $erreur["pseudo"] = "Veuillez inscrire votre pseudo";
+                } else if (!preg_match($nom, $pseudo)) {
+                    $erreur["pseudo"] = "Charactère non valide";
+                } else if (strlen($pseudo) < 4) {
+                    $erreur["pseudo"] = "Pseudo trop court";
+                } else if (strlen($pseudo) > 25) {
+                    $erreur["pseudo"] = "Pseudo trop long";
+                }
             }
-        }
 
-        if(isset($password)) {
-            if (empty($password)) {
-                $erreur["mdp"] = "Veuillez rentrer votre mot de passe";
-            } else if (strlen($password) < 6) {
-                $erreur["mdp"] = "Mot de passe trop court";
-            } else if (strlen($password) > 20) {
-                $erreur["mdp"] = "Mot de passe trop long";
+            if(isset($password)) {
+                if (empty($password)) {
+                    $erreur["mdp"] = "Veuillez rentrer votre mot de passe";
+                } else if (strlen($password) < 6) {
+                    $erreur["mdp"] = "Mot de passe trop court";
+                } else if (strlen($password) > 20) {
+                    $erreur["mdp"] = "Mot de passe trop long";
+                }
             }
-        }
 
-        if(isset($mdpVerif)) {
-            if (empty($mdpVerif)) {
-                $erreur["mdpVerif"] = "Veuillez confirmer votre mot de passe";
+            if(isset($mdpVerif)) {
+                if (empty($mdpVerif)) {
+                    $erreur["mdpVerif"] = "Veuillez confirmer votre mot de passe";
+                }
+                else if (!empty($password) && ($password != $mdpVerif)) {
+                    $erreur["mdpVerif"] = "Le mot de passe n'est pas le même";
+                }
             }
-            else if (!empty($password) && ($password != $mdpVerif)) {
-                $erreur["mdpVerif"] = "Le mot de passe n'est pas le même";
+            // Vérifier si l'email existe
+            $stmt = $pdo->prepare("SELECT u_id FROM users WHERE u_email = :email");
+            $stmt->execute(['email' =>  $email]);
+            if ($stmt->fetch()) {
+                $erreur["email"] = "Adresse email déjà utilisée";
             }
-        }
-        // Vérifier si l'email existe
-        $stmt = $pdo->prepare("SELECT u_id FROM users WHERE u_email = :email");
-        $stmt->execute(['email' =>  $email]);
-        if ($stmt->fetch()) {
-            $erreur["email"] = "Adresse email déjà utilisée";
-        }
 
-        // Vérifier si le pseudo existe
-        $stmt = $pdo->prepare("SELECT u_id FROM users WHERE u_username = :pseudo");
-        $stmt->execute(['pseudo' => $pseudo]);
-        if ($stmt->fetch()) {
-            $erreur["pseudo"] = "Pseudo déjà utilisé";
-        }
+            // Vérifier si le pseudo existe
+            $stmt = $pdo->prepare("SELECT u_id FROM users WHERE u_username = :pseudo");
+            $stmt->execute(['pseudo' => $pseudo]);
+            if ($stmt->fetch()) {
+                $erreur["pseudo"] = "Pseudo déjà utilisé";
+            }
 
-        // Si pas d'erreur, on crée l'utilisateur
-        if(empty($erreur)){
-            $_SESSION['registerEtat'] = " "; //On affiche l'alert de succès
-            $user = new User();
-            $result = $user->createUser(
-                htmlspecialchars($pseudo ?? ''),
-                htmlspecialchars($email ?? ''),
-                htmlspecialchars($password ?? ''),
-                htmlspecialchars($mdpVerif ?? '')
-            );
-            if ($result === true) {
+            // Si pas d'erreur, on crée l'utilisateur
+            if(empty($erreur)){
                 $_SESSION['registerEtat'] = " "; //On affiche l'alert de succès
-                header('Location: index.php?url=login');
-                exit;
-            } elseif (is_array($result)) {
-                $erreur = $result;
+                $user = new User();
+                $erreur = [];
+                $result = $user->createUser(
+                    htmlspecialchars($pseudo ?? ''),
+                    htmlspecialchars($email ?? ''),
+                    htmlspecialchars($password ?? ''),
+                    htmlspecialchars($mdpVerif ?? '')
+                );
+                if ($result === true) {
+                    $_SESSION['registerEtat'] = " "; //On affiche l'alert de succès
+                    header('Location: index.php?url=login');
+                    exit;
+                } elseif (is_array($result)) {
+                    $erreur = $result;
+                }
             }
         }
         require __DIR__ . '/../views/register.php'; // La vue peut utiliser $erreur

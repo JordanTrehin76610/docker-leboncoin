@@ -30,8 +30,8 @@
         <form action="index.php?url=search" method="POST" class="">
             <div class="container">
                 <div class="row"><input type="text" name="search" placeholder="Rechercher une annonce"
-                        class="border rounded mb-2 w-50 mx-auto py-1"></div>
-                <div class="row w-50 mx-auto mt-2"><button class="boutton w-25 mx-auto" type="submit">Rechercher</button></div>
+                        class="border rounded mb-2 widthSearchBar mx-auto py-1"></div>
+                <div class="row w-50 mx-auto mt-2"><button class="boutton widthSearch mx-auto" type="submit">Rechercher</button></div>
             </div>
         </form>
 

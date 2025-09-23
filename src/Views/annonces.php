@@ -26,7 +26,7 @@
             <div class="row">
                 <?php foreach ($_SESSION['annonce'] as $article) {
                     if ($article['is_achete'] == false ) { ?>
-                <div class="col text-decoration-none text-dark col-4 border">
+                <div class="col text-decoration-none text-dark col-lg-4 border">
                     <?php $url = "index.php?url=details/". $article['a_id']?>
                     <a href='<?= $url ?>' class="text-decoration-none text-dark">
                         <div class="row">
@@ -47,7 +47,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col mt-2 description overflow-x-hidden">
+                            <div class="col mt-2 description">
                                 <p><?= $article['a_description'] ?></p>
                             </div>
                         </div>
@@ -73,7 +73,7 @@
                             </form>
                         </div>
                         <?php } }?>
-                        <div class="col-8 mb-2 ms-4">
+                        <div class="col-lg-8 col-7 mb-2 ms-4">
                             <span class="badge text-bg-success"><?= $article['a_price'] ?>€</span>
                         </div>
                         <div class="col-1">
