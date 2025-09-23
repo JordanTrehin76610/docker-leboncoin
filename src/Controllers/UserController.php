@@ -88,7 +88,6 @@ class UserController
             if(empty($erreur)){
                 $_SESSION['registerEtat'] = " "; //On affiche l'alert de succès
                 $user = new User();
-                $erreur = [];
                 $result = $user->createUser(
                     htmlspecialchars($pseudo ?? ''),
                     htmlspecialchars($email ?? ''),
