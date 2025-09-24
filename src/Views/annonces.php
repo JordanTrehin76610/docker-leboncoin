@@ -87,8 +87,8 @@
                                 <button type="submit" class="btn btn-warning text-white"><i
                                         class="bi bi-star"></i></button>
                             </form>
+                            <?php } } ?>
                         </div>
-                        <?php } }?>
                     </div>
                 </div>
                 <?php }} ?>
