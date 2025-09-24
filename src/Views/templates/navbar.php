@@ -16,19 +16,19 @@
             </div>
             <div class="col-6 col-lg-1">
                 <a href="index.php?url=profil" class="text-dark text-decoration-none">
-                    <div class="row ms-lg-4 mt-2">
+                    <div class="row text-lg-center mt-2">
                         <i class="bi bi-person icone"></i>
                     </div>
-                    <div class="row">
+                    <div class="row text-lg-center">
                         <p class="text-dark text-decoration-none">Bonjour <?= $_SESSION['username'] ?> </p>
                     </div>
                 </a>
             </div>
             <div class="col-6 col-lg-1">
-                <div class="row mt-2 pt-1 ms-lg-4">
+                <div class="row mt-2 pt-1 text-lg-center">
                     <i class="bi bi-wallet"></i>
                 </div>
-                <div class="row mt-1 ms-lg-2">
+                <div class="row mt-1 ms-lg-2 text-lg-center">
                     <p class="text-dark text-decoration-none"><?= $_SESSION['monney'] ?> €</p>
                 </div>
             </div>

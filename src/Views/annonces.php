@@ -54,7 +54,7 @@
                     </a>
                     <div class="row">
                         <?php if (isset($_SESSION['id'])) { ?>
-                        <?php if ($article['u_id'] == $_SESSION['id']) { ?>
+                        <?php if ($article['u_id'] == $_SESSION['id'] || $article['u_id'] == 0) { ?>
                         <div class="col-1">
                             <button type="submit" class="btn btn-secondary text-white"><i
                                     class="bi bi-bag-fill"></i></button>
