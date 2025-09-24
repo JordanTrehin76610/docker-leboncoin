@@ -108,11 +108,11 @@ class User
 
 
             // Suppression des achats de l'utilisateur
-            $sql3 = "DELETE FROM ACHAT WHERE a_id IN (SELECT a_id FROM annonces WHERE u_id = :id)";
+            $sql3 = "DELETE FROM Achat WHERE a_id IN (SELECT a_id FROM annonces WHERE u_id = :id)";
             $stmt3 = $pdo->prepare($sql3);
             $stmt3->execute(['id' => $id]);
 
-            $sql4 = "DELETE FROM ACHAT WHERE ACHAT.u_id = :id";
+            $sql4 = "DELETE FROM Achat WHERE Achat.u_id = :id";
             $stmt4 = $pdo->prepare($sql4);
             $stmt4->execute(['id' => $id]);
 
