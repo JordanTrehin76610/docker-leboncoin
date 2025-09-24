@@ -25,7 +25,7 @@
                 </a>
             </div>
             <div class="col-6 col-lg-1">
-                <div class="row mt-2 pt-1 ms-lg-2">
+                <div class="row mt-2 pt-1 ms-lg-4">
                     <i class="bi bi-wallet"></i>
                 </div>
                 <div class="row mt-1 ms-lg-2">
