@@ -53,8 +53,8 @@
                         </div>
                     </a>
                     <div class="row">
-                        <?php if (isset($_SESSION['id'])) { ?>
-                        <?php if ($article['u_id'] == $_SESSION['id'] || $article['u_id'] == 0) { ?>
+                        <?php if (isset($_SESSION['id']) && $article['u_id'] != 0) { ?>
+                        <?php if ($article['u_id'] == $_SESSION['id']) { ?>
                         <div class="col-1">
                             <button type="submit" class="btn btn-secondary text-white"><i
                                     class="bi bi-bag-fill"></i></button>
@@ -87,8 +87,9 @@
                                 <button type="submit" class="btn btn-warning text-white"><i
                                         class="bi bi-star"></i></button>
                             </form>
-                            <?php } } ?>
+                            <?php } ?>
                         </div>
+                        <?php } ?>
                     </div>
                 </div>
                 <?php }} ?>
