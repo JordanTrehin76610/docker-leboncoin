@@ -345,6 +345,9 @@ class Annonce
                         return $_SESSION['annonce'];   
                     }
                     break;
+                default:
+                    header("Location: index.php?url=page404");
+                    break;
             }
         return $_SESSION['annonce'];
     }
