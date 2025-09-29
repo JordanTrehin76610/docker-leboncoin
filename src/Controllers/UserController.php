@@ -13,6 +13,7 @@ class UserController
 
     public function register(): void {
 
+        //On recommence une nouvelle session, question de sécurité
         session_start();
         session_unset();
         session_destroy();
@@ -23,6 +24,7 @@ class UserController
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+            // Récupération des données du formulaire
             $email = $_POST["email"] ?? '';
             $pseudo = $_POST["pseudo"] ?? '';
             $password = $_POST["mdp"] ?? '';
@@ -70,6 +72,7 @@ class UserController
                     $erreur["mdpVerif"] = "Le mot de passe n'est pas le même";
                 }
             }
+
             // Vérifier si l'email existe
             $stmt = $pdo->prepare("SELECT u_id FROM users WHERE u_email = :email");
             $stmt->execute(['email' =>  $email]);
@@ -109,12 +112,12 @@ class UserController
 
     public function login(): void {
 
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username']))  //Si l'utilisateur n'est pas connecté, on commence une session, question de sécurité
         { 
             session_start(); 
         } 
 
-        $erreur = [];
+        $erreur = []; //On initialise le tableau d'erreurs
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Vérification email
@@ -231,6 +234,8 @@ class UserController
 
 
     public function logout(): void {
+        //On détruit la session
+        session_start();
         session_unset();
         session_destroy();
         header("Location: index.php?url=home");

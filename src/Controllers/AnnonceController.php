@@ -3,31 +3,29 @@ namespace App\Controllers;
 
 use App\Models\Annonce;
 use App\Models\Database;
-use PDO;
-use PDOException;
 
 class AnnonceController
 {
 
 
     public function index(): void {
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username'])) //Si l'utilisateur n'est pas connecté, on commence une session, question de sécurité
         { 
             session_start(); 
         } 
         $_SESSION['registerEtat'] = "visually-hidden"; //On affiche l'alert de succès
         $touteAnnonces = new Annonce();
-        $touteAnnonces->findAll();
+        $touteAnnonces->findAll(); //On récupère toutes les annonces
 
         require_once __DIR__ . '/../views/annonces.php';   // On envoie ça à une vue
     }
 
     public function search(): void {
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username']))  //Si l'utilisateur n'est pas connecté, on commence une session, question de sécurité
         { 
             session_start(); 
         }
-        if (empty($_POST['search'])) {
+        if (empty($_POST['search'])) { //Si le champ de recherche est vide, on le redirige vers la page annonces
             header('Location: index.php?url=annonces');
             exit;
         }
@@ -41,18 +39,19 @@ class AnnonceController
 
     public function create(): void {
 
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username'])) //Si l'utilisateur n'est pas connecté, on le dégage vers la page 404
         { 
             header("Location: index.php?url=page404");
             exit;
         }
 
         $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex
-        $_SESSION['erreur'] = [];
+        $_SESSION['erreur'] = []; //On initialise le tableau d'erreurs
         $erreur = [];
         $_SESSION['achatEtat'] = "visually-hidden";
         $_SESSION['registerEtat'] = "visually-hidden"; //On affiche l'alert de succès
 
+        //ON RECUPERE LES INFOS DU FORMULAIRE, SI ABSENT ON MET UNE VALEUR PAR DEFAUT
         $photo = $_FILES['photo'] ?? null;
         $titre = $_POST['titre'] ?? '';
         $prix = $_POST['prix'] ?? 0;
@@ -107,14 +106,14 @@ class AnnonceController
                 $tmpName = $photo['tmp_name'];
                 $name = $photo['name'];
                 $today = date("Ymd");  
-                if (!isset($photo) || $photo['name'] == '') {
+                if (!isset($photo) || $photo['name'] == '') { //Si l'utilisateur n'a pas mis de photo, on met une photo par défaut
                     $chemin = 'uploads/default.png';
                 } else {
                     $chemin = 'uploads/'.$userId.'_'.$today.'_'.$name;
                 }
                 move_uploaded_file($tmpName, __DIR__ . '/../../public/uploads/'.$userId.'_'.$today.'_'.$name); //Enregistre le fichier photo
                 $annonce = new Annonce();
-                $annonce->createAnnonce(htmlspecialchars($titre ?? ''), htmlspecialchars($description ?? ''), floatval($prix ?? 0), $chemin, $userId, 'A vendre');
+                $annonce->createAnnonce(htmlspecialchars($titre ?? ''), htmlspecialchars($description ?? ''), floatval($prix ?? 0), $chemin, $userId, 'A vendre'); //htlmmspecialchars pour éviter les failles xss
             } else {
                 $_SESSION['erreur'] = $erreur;
             }
@@ -129,7 +128,7 @@ class AnnonceController
         $sql = "SELECT * FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
-        $exists = $stmt->fetchColumn(); //On remplie la variable $exists avec le résultat de la requête
+        $exists = $stmt->fetchColumn(); //On remplie la variable $exists avec le résultat de la requête, fetchColumn renvoie une seule colonne
         
         if ($exists) { //Si le résultat n'est pas vide alors go
         $detailAnnonce = new Annonce();
@@ -144,7 +143,7 @@ class AnnonceController
 
 
     public function delete(?int $id): void {
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username'])) //Si l'utilisateur n'est pas connecté, on commence une session, question de sécurité
         { 
             session_start(); 
         }
@@ -170,9 +169,9 @@ class AnnonceController
 
 
     public function edit(?int $id): void {
-        $_SESSION['erreur'] = [];
+        $_SESSION['erreur'] = []; //On initialise le tableau d'erreurs
         
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username']))  //Si l'utilisateur n'est pas connecté, on commence une session, question de sécurité 
         { 
             session_start(); 
         }
@@ -191,7 +190,7 @@ class AnnonceController
             exit;        
         } else {
             $edit = new Annonce();
-            if (isset($_POST['titre'])) {
+            if (isset($_POST['titre'])) { //On vérifie quel champ a été modifié
                 $edit->editAnnonce($id, 10, $_POST['titre']);
             } else if (isset($_POST['description'])) {
                 $edit->editAnnonce($id, 20, $_POST['description']);
@@ -216,7 +215,7 @@ class AnnonceController
 
 
     public function addFav(int $idArticle) {
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username']))  //Si l'utilisateur n'est pas connecté, on commence une session, question de sécurité
         { 
             header("Location: index.php?url=page404");
             exit;
@@ -230,7 +229,7 @@ class AnnonceController
 
 
     public function removeFav(int $idArticle) {
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username']))  //Si l'utilisateur n'est pas connecté, on commence une session, question de sécurité
         { 
             header("Location: index.php?url=page404");
             exit; 
@@ -244,7 +243,7 @@ class AnnonceController
 
 
     public function removeFavProfil(int $idArticle) {
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username']))  //Si l'utilisateur n'est pas connecté, on commence une session, question de sécurité
         { 
             header("Location: index.php?url=page404");
             exit; 
@@ -259,7 +258,7 @@ class AnnonceController
 
 
     public function achat(int $idArticle, float $prixArticle) {
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username']))  //Si l'utilisateur n'est pas connecté, on commence une session, question de sécurité
         { 
             header("Location: index.php?url=page404");
             exit; 

@@ -7,7 +7,7 @@ use App\Models\Annonce;
 class HomeController
 {
     public function index(): void {
-        if(!isset($_SESSION['username'])) 
+        if(!isset($_SESSION['username']))  //Si l'utilisateur n'est pas connecté, on commence une session, question de sécurité
         { 
             session_start(); 
         }

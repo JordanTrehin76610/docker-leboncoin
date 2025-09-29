@@ -8,13 +8,13 @@ use PDOException;
 class User
 {
     public function createUser(string $pseudo, string $email, string $mdpVerif) {
-        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceEtat'] = "visually-hidden"; //On cache l'alert d'erreur car on est plus sur la page profil
         $_SESSION['annonceCreation'] = "visually-hidden";
         $_SESSION['registerEtat'] = " "; //On affiche l'alert de succès
 
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
-        $mdp = password_hash($mdpVerif, PASSWORD_DEFAULT);
+        $mdp = password_hash($mdpVerif, PASSWORD_DEFAULT); //On hash le mot de passe
         try {
         //Requete
         $sql = "INSERT INTO users (u_email, u_password, u_username, u_monney) VALUES (:email, :mdp, :pseudo, :monney)";
@@ -36,7 +36,7 @@ class User
 
     //VERIFIE SI L'EMAIL EXISTE DANS LA BASE DE DONNEES
     public function findByEmail(string $email): ?array {
-        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceEtat'] = "visually-hidden"; //On cache l'alert d'erreur car on est plus sur la page profil
         $_SESSION['annonceCreation'] = "visually-hidden";
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
@@ -44,7 +44,7 @@ class User
         $stmt->execute(['email' => $email]); //Verification si l'email existe
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        if ($user) {
+        if ($user) { //Si l'email existe
             return null; //L'email existe donc on renvoie aucune erreur :)
         } else {
             $erreur['connexion'] = "Adresse mail ou mot de passe incorrect";
@@ -56,7 +56,7 @@ class User
     public function addMoney(int $id, float $amount): bool {
 
         $pdo = Database::getConnection();
-        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceEtat'] = "visually-hidden"; //On cache l'alert d'erreur car on est plus sur la page profil
         $_SESSION['annonceCreation'] = "visually-hidden";
 
         try {
@@ -67,7 +67,7 @@ class User
             $stmt->execute(['id' => $id]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $total = $user['u_monney'] + $amount;
+            $total = $user['u_monney'] + $amount; // Calculer le nouveau solde
 
             // Mettre à jour le solde de l'utilisateur
             $stmt = $pdo->prepare("UPDATE users SET u_monney = :newMonney WHERE u_id = :id");
@@ -75,7 +75,7 @@ class User
                 'newMonney' => $total,
                 'id' => $id
             ]);
-            $_POST['moneyEtat'] = " ";
+            $_POST['moneyEtat'] = " "; //On affiche l'alert de succès
             return true;
 
         } catch (PDOException $e) {
@@ -121,6 +121,10 @@ class User
             // $sql5 = "DELETE FROM annonces WHERE u_id = :id";
             // $stmt5 = $pdo->prepare($sql5);
             // $stmt5->execute(['id' => $id]);
+
+
+            //A La place de tout ce code, j'ai mis la suppression en cascade dans la BDD
+
 
             //SAUVEGARDE DES ANNONCES DE L'UTILISATEUR EN METTANT SON ID A 0 (ANONYME)
             $sql = "UPDATE annonces SET u_id = :newId WHERE u_id = :id";

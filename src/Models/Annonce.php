@@ -9,7 +9,7 @@ class Annonce
 {
 
     public function createAnnonce(string $titre, string $description, float $prix, ?string $chemin, int $userId, string $statut): bool {
-        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceEtat'] = "visually-hidden"; //Masque les alerts de la page profil dés qu'on sort (ici on créer une annonce donc on est plus sur la page profil)
         $_SESSION['achatEtat'] = "visually-hidden";
         $_SESSION['annonceCreation'] = " ";
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard        
@@ -30,7 +30,7 @@ class Annonce
             exit;
             return true;
                 
-            } catch (PDOException $e) {
+            } catch (PDOException $e) { //En cas d'erreur
                 return false;
             } 
         }
@@ -39,17 +39,17 @@ class Annonce
 
     public function findAll(): array {
 
-        $pdo = Database::getConnection();
+        $pdo = Database::getConnection(); //On se connecte à la base de donnée avec la fonction statique getConnection de la classe Database
         
         try {
             $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN users ON annonces.u_id = users.u_id");
             $stmt->execute();
-            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC); //On stocke le résultat de la requête dans $annonce, fetchAll car plusieurs résultats
             $_SESSION['annonce'] = $annonce;
 
             //Pour virer les articles acheté de la liste principale
             $achat = $this->achatAll(); //On appelle la fonction pour avoir tous les achats
-            foreach ($_SESSION['annonce'] as &$annonce) {
+            foreach ($_SESSION['annonce'] as &$annonce) { // ForEach qui sert à mettre une clé is_achete à true ou false selon si l'annonce a été achetée ou non
                 if (isset($achat) && !empty($achat)) {
                     foreach ($achat as $achatId) {
                         if ($annonce['a_id'] == $achatId['a_id']) { //On compare les id des annonces avec les id des achats
@@ -73,7 +73,7 @@ class Annonce
             }
 
 
-        } catch (PDOException $e) {
+        } catch (PDOException $e) { //En cas d'erreur
             die("❌ Erreur SQL : " . $e->getMessage());
         }
         return $_SESSION['annonce'];
@@ -82,7 +82,7 @@ class Annonce
     
     public function findLast(): array {
 
-        $pdo = Database::getConnection();
+        $pdo = Database::getConnection(); //On se connecte à la base de donnée avec la fonction statique getConnection de la classe Database
         $_SESSION['annonceEtat'] = "visually-hidden";
         $_SESSION['annonceCreation'] = "visually-hidden";
         $_SESSION['achatEtat'] = "visually-hidden";
@@ -95,7 +95,7 @@ class Annonce
 
             //Pour virer les articles acheté de la liste principale
             $achat = $this->achatAll(); //On appelle la fonction pour avoir tous les achats
-            foreach ($_SESSION['annonce'] as &$annonce) {
+            foreach ($_SESSION['annonce'] as &$annonce) { // ForEach qui sert à mettre une clé is_achete à true ou false selon si l'annonce a été achetée ou non
                 if (isset($achat) && !empty($achat)) {
                     foreach ($achat as $achatId) {
                         if ($annonce['a_id'] == $achatId['a_id']) { //On compare les id des annonces avec les id des achats
@@ -117,13 +117,13 @@ class Annonce
                 }
             }
 
-            foreach ($_SESSION['annonce'] as $index => $annonce) {
+            foreach ($_SESSION['annonce'] as $index => $annonce) { //Degage les annonces achetées
                 if ($annonce['is_achete'] == true) {
                     unset($_SESSION['annonce'][$index]);
                 }
             }
 
-        } catch (PDOException $e) {
+        } catch (PDOException $e) { //En cas d'erreur
             die("❌ Erreur SQL : " . $e->getMessage());
         }
         return $_SESSION['annonce'];
@@ -132,7 +132,7 @@ class Annonce
 
     public function search($search): array {
 
-        $pdo = Database::getConnection();
+        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
         $_SESSION['annonceEtat'] = "visually-hidden";
         $_SESSION['annonceCreation'] = "visually-hidden";
         $_SESSION['achatEtat'] = "visually-hidden";
@@ -145,7 +145,7 @@ class Annonce
 
             //Pour virer les articles acheté de la liste principale
             $achat = $this->achatAll(); //On appelle la fonction pour avoir tous les achats
-            foreach ($_SESSION['annonce'] as &$annonce) {
+            foreach ($_SESSION['annonce'] as &$annonce) { // ForEach qui sert à mettre une clé is_achete à true ou false selon si l'annonce a été achetée ou non
                 if (isset($achat) && !empty($achat)) {
                     foreach ($achat as $achatId) {
                         if ($annonce['a_id'] == $achatId['a_id']) { //On compare les id des annonces avec les id des achats
@@ -169,7 +169,7 @@ class Annonce
             }
 
 
-        } catch (PDOException $e) {
+        } catch (PDOException $e) { //En cas d'erreur
             die("❌ Erreur SQL : " . $e->getMessage());
         }
         return $_SESSION['annonce'];
@@ -187,10 +187,10 @@ class Annonce
         try {
             $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.a_id, u_username, annonces.u_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE annonces.a_id = :id");
             $stmt->execute(['id' => $id]);
-            $annonce = $stmt->fetch(PDO::FETCH_ASSOC);
+            $annonce = $stmt->fetch(PDO::FETCH_ASSOC); //On utilise fetch car un seul résultat
             $_SESSION['annonce'] = $annonce;
 
-        } catch (PDOException $e) {
+        } catch (PDOException $e) { //En cas d'erreur
             die("❌ Erreur SQL : " . $e->getMessage());
         }
         return $_SESSION['annonce'];
@@ -202,22 +202,22 @@ class Annonce
         $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
-            $sql = "SELECT a_picture FROM annonces WHERE annonces.a_id = :id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(['id' => $id]);
+            $sql = "SELECT a_picture FROM annonces WHERE annonces.a_id = :id"; //On prepare la requête pour une question de sécurité
+            $stmt = $pdo->prepare($sql); //On prépare la requête
+            $stmt->execute(['id' => $id]); //On exécute la requête avec les valeurs
             $picture = $stmt->fetchColumn();
             if ($picture && is_file($picture) && $picture != 'uploads/default.png') {
                 unlink($picture); //Supprime le fichier de l'annonce
             }
 
-            $sql = "DELETE FROM annonces WHERE a_id = :id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute(['id' => $id]);
+            $sql = "DELETE FROM annonces WHERE a_id = :id"; //On prepare la requête pour une question de sécurité
+            $stmt = $pdo->prepare($sql); //On prépare la requête
+            $stmt->execute(['id' => $id]); //On exécute la requête avec les valeurs
             $_SESSION['annonceEtat'] = " ";
             $_SESSION['annonceCreation'] = "visually-hidden";
             $_SESSION['achatEtat'] = "visually-hidden";
             return true;
-        } catch (PDOException $e) {
+        } catch (PDOException $e) { //En cas d'erreur
             return false;
         }
     }
@@ -226,7 +226,7 @@ class Annonce
     public function editAnnonce(int $id, int $action, string $modif) {
 
         $regexPrix = '/^\d+(?:\.\d{1,2})?$/'; //Regex
-        $_SESSION['annonceEtat'] = "visually-hidden";
+        $_SESSION['annonceEtat'] = "visually-hidden"; //Masque les alerts de la page profil dés qu'on sort (ici on edite une annonce donc on est plus sur la page profil)
         $_SESSION['annonceCreation'] = "visually-hidden";
         $_SESSION['achatEtat'] = "visually-hidden";
         $_SESSION['erreur'] = [];
@@ -242,7 +242,7 @@ class Annonce
             die("❌ Erreur SQL : " . $e->getMessage());
         }
 
-            switch ($action) {
+            switch ($action) { //Switch pour savoir quel champ on modifie
                 case 10:
                     if(isset($_POST['titre'])) {
                         if(empty($_POST['titre'])) {
@@ -326,15 +326,15 @@ class Annonce
                     }
 
                     //On ajoute la nouvelle photo
-                    $tmpName = $_FILES['photo']['tmp_name'];
-                    $name = $_FILES['photo']['name'];
-                    $today = date("Ymd");  
-                    $chemin = 'uploads/'.$_SESSION['id'].'_'.$today.'_'.$name;
+                    $tmpName = $_FILES['photo']['tmp_name']; //Nom temporaire du fichier
+                    $name = $_FILES['photo']['name']; //Nom du fichier
+                    $today = date("Ymd");   //Date du jour
+                    $chemin = 'uploads/'.$_SESSION['id'].'_'.$today.'_'.$name; //Chemin de la photo avec le nom du fichier
                     move_uploaded_file($tmpName, __DIR__ . '/../../public/uploads/'.$_SESSION['id'].'_'.$today.'_'.$name); //Enregistre le fichier photo
                     try {
-                        $stmt = $pdo->prepare("UPDATE annonces SET a_picture = :photo WHERE a_id = :id");
+                        $stmt = $pdo->prepare("UPDATE annonces SET a_picture = :photo WHERE a_id = :id"); 
                         $stmt->execute([
-                            ':photo' => $chemin,
+                            ':photo' => $chemin, //On stocke le chemin de la photo en base de donnée
                             ':id' => $id
                         ]);
                         $_SESSION['erreur'] = [];
@@ -362,7 +362,7 @@ class Annonce
                 ':annonceId' => $annonceId
             ]);
             return true;    
-        } catch (PDOException $e) {
+        } catch (PDOException $e) { //En cas d'erreur
             return false;
         }
     }
@@ -417,6 +417,7 @@ class Annonce
 
         try {
             //Requete
+            //On ajoute l'achat dans la table Achat 
             $stmt = $pdo->prepare("INSERT INTO Achat (u_id, a_id) VALUES (:userId, :annonceId)"); 
             // Exécution avec les valeurs
             $stmt->execute([
@@ -424,6 +425,7 @@ class Annonce
                 ':annonceId' => $annonceId
             ]);
 
+            //On retire le montant de l'achat au solde de l'utilisateur
             $stmt2 = $pdo->prepare("SELECT u_monney FROM users WHERE u_id = :userId");
             $stmt2->execute([':userId' => $userId]);
             $monney = $stmt2->fetchColumn();
@@ -435,12 +437,13 @@ class Annonce
                 ':userId' => $userId
             ]);
 
+            //On passe le statut de l'annonce à "vendu"
             $stmt4 = $pdo->prepare("UPDATE annonces SET a_statut = 'vendu' WHERE a_id = :annonceId");
             $stmt4->execute([':annonceId' => $annonceId]);
             $_POST['achatEtat'] = " ";
             return true;
 
-        } catch (PDOException $e) {
+        } catch (PDOException $e) { //En cas d'erreur
             return false;
         }
     }
@@ -452,9 +455,9 @@ class Annonce
         try {
             $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN Achat ON annonces.a_id = Achat.a_id INNER JOIN users ON annonces.u_id = users.u_id WHERE Achat.u_id = :userId");
             $stmt->execute(['userId' => $userId]);
-            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC); //On stocke le résultat de la requête dans $annonce, fetchAll car plusieurs résultats
             $_SESSION['achat'] = $annonce;
-        } catch (PDOException $e) {
+        } catch (PDOException $e) { //En cas d'erreur
             die("❌ Erreur SQL : " . $e->getMessage());
         }
         return $_SESSION['achat'];
@@ -467,9 +470,9 @@ class Annonce
         try {
             $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN Achat ON annonces.a_id = Achat.a_id INNER JOIN users ON annonces.u_id = users.u_id");
             $stmt->execute();
-            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $annonce = $stmt->fetchAll(PDO::FETCH_ASSOC); //On stocke le résultat de la requête dans $annonce, fetchAll car plusieurs résultats
             $_SESSION['achat'] = $annonce;
-        } catch (PDOException $e) {
+        } catch (PDOException $e) { //En cas d'erreur
             die("❌ Erreur SQL : " . $e->getMessage());
         }
         return $_SESSION['achat'];
