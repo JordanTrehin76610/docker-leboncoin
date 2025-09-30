@@ -1,5 +1,5 @@
 {
-    "name": "jury-1/docker-leboncoin-main",
+    "name": "jury-1/docker-leboncoin",
     "autoload": {
         "psr-4": {
             "App\\": "src/"

@@ -19,7 +19,7 @@ class UserController
         session_destroy();
         session_start();
 
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
         $nom = "/^[a-z0-9.-]+$/i"; //Regex
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -138,7 +138,7 @@ class UserController
         // Si pas d'erreur sur email/mdp, on va chercher l'utilisateur
         if (empty($erreur)) {
             try {
-                $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+                $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
                 $stmt = $pdo->prepare("SELECT u_id, u_username, u_email, u_password, u_inscription, u_monney FROM users WHERE u_email = :email");
                 $stmt->execute(['email' => $email]);
                 $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -177,7 +177,7 @@ class UserController
 
     public function profil($id): void {
 
-        $pdo = Database::getConnection(); //On se connecte à la base de données
+        $pdo = Database::createInstancePDO(); //On se connecte à la base de données
         $sql = "SELECT * FROM users WHERE u_id = :id"; //On regarde si l'utilisateur avec cet id existe
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
@@ -219,7 +219,7 @@ class UserController
 
             // Récupère les annonces de l'utilisateur
             try {
-                $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+                $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
                 $stmt = $pdo->prepare("SELECT a_title, a_picture, a_description, a_price, annonces.u_id, a_id, a_statut FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE annonces.u_id = :id");
                 $stmt->execute(['id' => $id]);
                 $annonces = $stmt->fetchAll(PDO::FETCH_ASSOC);

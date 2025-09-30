@@ -12,7 +12,7 @@ class Annonce
         $_SESSION['annonceEtat'] = "visually-hidden"; //Masque les alerts de la page profil dés qu'on sort (ici on créer une annonce donc on est plus sur la page profil)
         $_SESSION['achatEtat'] = "visually-hidden";
         $_SESSION['annonceCreation'] = " ";
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard        
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard        
         try {
             //Requete
             $stmt = $pdo->prepare("INSERT INTO annonces (a_title, a_description, a_price, a_picture, u_id, a_statut) VALUES (:titre, :descriptions, :prix, :photo, :utilisateur, :statut)"); 
@@ -39,7 +39,7 @@ class Annonce
 
     public function findAll(): array {
 
-        $pdo = Database::getConnection(); //On se connecte à la base de donnée avec la fonction statique getConnection de la classe Database
+         $pdo = Database::createInstancePDO(); //On se connecte à la base de donnée avec la fonction statique createInstancePDO de la classe Database
         
         try {
             $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN users ON annonces.u_id = users.u_id");
@@ -82,7 +82,7 @@ class Annonce
     
     public function findLast(): array {
 
-        $pdo = Database::getConnection(); //On se connecte à la base de donnée avec la fonction statique getConnection de la classe Database
+        $pdo = Database::createInstancePDO(); //On se connecte à la base de donnée avec la fonction statique getConnection de la classe Database
         $_SESSION['annonceEtat'] = "visually-hidden";
         $_SESSION['annonceCreation'] = "visually-hidden";
         $_SESSION['achatEtat'] = "visually-hidden";
@@ -132,7 +132,7 @@ class Annonce
 
     public function search($search): array {
 
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
         $_SESSION['annonceEtat'] = "visually-hidden";
         $_SESSION['annonceCreation'] = "visually-hidden";
         $_SESSION['achatEtat'] = "visually-hidden";
@@ -179,7 +179,7 @@ class Annonce
 
     public function findById(int $id): ?array {
 
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
         $_SESSION['annonceEtat'] = "visually-hidden";
         $_SESSION['annonceCreation'] = "visually-hidden";
         $_SESSION['achatEtat'] = "visually-hidden";
@@ -199,7 +199,7 @@ class Annonce
 
     public function delete(int $id): bool {
 
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
             $sql = "SELECT a_picture FROM annonces WHERE annonces.a_id = :id"; //On prepare la requête pour une question de sécurité
@@ -231,7 +231,7 @@ class Annonce
         $_SESSION['achatEtat'] = "visually-hidden";
         $_SESSION['erreur'] = [];
 
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
             $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.a_id, u_username, annonces.u_id FROM annonces INNER JOIN users ON annonces.u_id = users.u_id WHERE annonces.a_id = :id");
@@ -354,7 +354,7 @@ class Annonce
 
 
     public function addFavorite(int $userId, int $annonceId): bool {
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
             //Requete
@@ -372,7 +372,7 @@ class Annonce
 
 
     public function isFavorite(int $annonceId): bool {
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
             //Requete
@@ -397,7 +397,7 @@ class Annonce
 
 
     public function deleteFavorite(int $userId, int $annonceId): bool {
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
             //Requete
@@ -416,7 +416,7 @@ class Annonce
 
     public function achat(int $annonceId, int $userId, float $price): bool {
 
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
             //Requete
@@ -453,7 +453,7 @@ class Annonce
 
 
     public function achatHistoric(int $userId): array {
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
             $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN Achat ON annonces.a_id = Achat.a_id INNER JOIN users ON annonces.u_id = users.u_id WHERE Achat.u_id = :userId");
@@ -468,7 +468,7 @@ class Annonce
 
     
     public function achatAll(): array {
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+         $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         try {
             $stmt = $pdo->prepare("SELECT a_title, a_description, a_price, a_picture, annonces.u_id, annonces.a_id, u_username FROM annonces INNER JOIN Achat ON annonces.a_id = Achat.a_id INNER JOIN users ON annonces.u_id = users.u_id");

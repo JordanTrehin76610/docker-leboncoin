@@ -124,7 +124,7 @@ class AnnonceController
 
     public function show(?int $id): void {
 
-        $pdo = Database::getConnection(); //On se connecte à la base de données
+        $pdo = Database::createInstancePDO(); //On se connecte à la base de données
         $sql = "SELECT * FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
@@ -148,7 +148,7 @@ class AnnonceController
             session_start(); 
         }
 
-        $pdo = Database::getConnection(); //On se connecte à la base de données
+        $pdo = Database::createInstancePDO(); //On se connecte à la base de données
         $sql = "SELECT a_id, u_id FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
@@ -179,7 +179,7 @@ class AnnonceController
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
-            $pdo = Database::getConnection(); //On se connecte à la base de données
+            $pdo = Database::createInstancePDO(); //On se connecte à la base de données
             $sql = "SELECT a_id, u_id FROM annonces WHERE a_id = :id"; //On regarde si l'annonce avec cet id existe
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['id' => $id]);

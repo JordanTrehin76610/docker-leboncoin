@@ -12,7 +12,7 @@ class User
         $_SESSION['annonceCreation'] = "visually-hidden";
         $_SESSION['registerEtat'] = " "; //On affiche l'alert de succès
 
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         $mdp = password_hash($mdpVerif, PASSWORD_DEFAULT); //On hash le mot de passe
         try {
@@ -38,7 +38,7 @@ class User
     public function findByEmail(string $email): ?array {
         $_SESSION['annonceEtat'] = "visually-hidden"; //On cache l'alert d'erreur car on est plus sur la page profil
         $_SESSION['annonceCreation'] = "visually-hidden";
-        $pdo = Database::getConnection(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
+        $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
 
         $stmt = $pdo->prepare("SELECT u_id, u_username, u_email, u_password, u_inscription, u_monney FROM users WHERE u_email = :email");
         $stmt->execute(['email' => $email]); //Verification si l'email existe
@@ -55,7 +55,7 @@ class User
 
     public function addMoney(int $id, float $amount): bool {
 
-        $pdo = Database::getConnection();
+        $pdo = Database::createInstancePDO();
         $_SESSION['annonceEtat'] = "visually-hidden"; //On cache l'alert d'erreur car on est plus sur la page profil
         $_SESSION['annonceCreation'] = "visually-hidden";
 
@@ -86,7 +86,7 @@ class User
 
     public function annihilation(int $id) {
 
-        $pdo = Database::getConnection();
+        $pdo = Database::createInstancePDO();
         $_SESSION['annonceEtat'] = "visually-hidden";
         $_SESSION['annonceCreation'] = "visually-hidden";
 
