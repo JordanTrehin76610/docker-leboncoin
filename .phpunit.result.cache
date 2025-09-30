@@ -1,0 +1,1 @@
+{"version":2,"defects":{"AnnonceTest::testCreateAnnonceInsertsAnnonce":8,"AnnonceTest::testFindByIdReturnsAnnonce":8,"UserTest::testCheckMailReturnsTrueWhenMailExists":8,"UserTest::testCheckMailReturnsFalseWhenMailDoesNotExist":8},"times":[]}

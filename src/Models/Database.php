@@ -24,29 +24,32 @@ use PDO;
 use PDOException;
 use Dotenv\Dotenv;
 
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
-$dotenv->load();
 
 class Database
 {
-    public static function createInstancePDO(): ?PDO
+    public static function createInstancePDO(): PDO|null
     {
-    try {
+        try {
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+        $dotenv->load();
+
         $dbhost = $_ENV['DB_HOST'];
-        $dbname = $_ENV['DB_NAME'];
+        $db_user = $_ENV['DB_USER'];
+        $db_password = $_ENV['DB_PASSWORD'];
+        $dbname = $_ENV['APP_ENV'] === 'test' ? $_ENV['DB_NAME_TEST'] : $_ENV['DB_NAME_DEV'];
         $pdo = new PDO(
             "mysql:host=$dbhost;dbname=$dbname;charset=utf8",
-            $_ENV['DB_USER'],
-            $_ENV['DB_PASSWORD'],
-        [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        ]
+            $db_user,
+            $db_password
         );
+        // Mode ERRMODE_EXCEPTION uniquement en dev
+        if ($_ENV['APP_ENV'] === 'dev') {
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        }
+        
         return $pdo;
-        } catch (PDOException $e) {
-        echo "Erreur de connexion : " . $e->getMessage();
 
+        } catch (PDOException $e) {
         return null;
         }
     }
