@@ -35,7 +35,7 @@ class User
 
 
     //VERIFIE SI L'EMAIL EXISTE DANS LA BASE DE DONNEES
-    public function findByEmail(string $email): ?array {
+    public function findByEmail(string $email): array|bool {
         $_SESSION['annonceEtat'] = "visually-hidden"; //On cache l'alert d'erreur car on est plus sur la page profil
         $_SESSION['annonceCreation'] = "visually-hidden";
         $pdo = Database::createInstancePDO(); //On se connecte à la base et on stocke la connexion dans $pdo qu'on utilise plus tard
@@ -45,7 +45,7 @@ class User
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($user) { //Si l'email existe
-            return null; //L'email existe donc on renvoie aucune erreur :)
+            return true; //L'email existe donc on renvoie aucune erreur :)
         } else {
             $erreur['connexion'] = "Adresse mail ou mot de passe incorrect";
             return $erreur;

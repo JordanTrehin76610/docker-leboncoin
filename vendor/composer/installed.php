@@ -3,7 +3,7 @@
         'name' => 'jury-1/docker-leboncoin',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '6bccedbc4307d6f3dd8af84146920b46eea172eb',
+        'reference' => 'd7cd0f59a404df76486e5f90c0feb0ee23c1cb1f',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'jury-1/docker-leboncoin' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '6bccedbc4307d6f3dd8af84146920b46eea172eb',
+            'reference' => 'd7cd0f59a404df76486e5f90c0feb0ee23c1cb1f',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

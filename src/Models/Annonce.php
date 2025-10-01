@@ -27,8 +27,8 @@ class Annonce
             ]);
 
             header("Location: index.php?url=profil");
-            exit;
             return true;
+            exit;
                 
             } catch (PDOException $e) { //En cas d'erreur
                 return false;
@@ -191,9 +191,9 @@ class Annonce
             $_SESSION['annonce'] = $annonce;
 
         } catch (PDOException $e) { //En cas d'erreur
-            die("❌ Erreur SQL : " . $e->getMessage());
+            return $error = ["message" => "❌ Erreur SQL : " . $e->getMessage()];
         }
-        return $_SESSION['annonce'];
+        return $_SESSION['annonce'] = $annonce;
     }
 
 
